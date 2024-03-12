@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+package:
+  id: org.deepin.foundation
+  name: deepin-foundation
+  version: 23.0.0.7
+  kind: runtime
+  description: |
+    deepin base environment.
+
+base:
+  id: deepin-foundation
+  version: 23.0.0.6
+
+source:
+  kind: local
+
+build:
+  kind: manual
+  manual:
+    configure: |
+      export PATH=/usr/bin:/bin
+      export LD_LIBRARY_PATH=/usr/lib:/usr/lib/$TRIPLET
+      cp -ar org.deepin.foundation/bin $PREFIX/
+      cp -ar org.deepin.foundation/boot $PREFIX/
+      cp -ar org.deepin.foundation/etc $PREFIX/
+      cp -ar org.deepin.foundation/home $PREFIX/
+      cp -ar org.deepin.foundation/lib $PREFIX/
+      cp -ar org.deepin.foundation/lib64 $PREFIX/
+      cp -ar org.deepin.foundation/opt $PREFIX/
+      cp -ar org.deepin.foundation/run $PREFIX/
+      cp -ar org.deepin.foundation/sbin $PREFIX/
+      cp -ar org.deepin.foundation/tmp $PREFIX/
+      cp -ar org.deepin.foundation/usr $PREFIX/
+      cp -ar org.deepin.foundation/var $PREFIX/
