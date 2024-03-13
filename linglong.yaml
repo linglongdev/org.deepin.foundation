@@ -5,17 +5,17 @@
 package:
   id: org.deepin.foundation
   name: deepin-foundation
-  version: 23.0.0.7
+  version: 23.0.0.8
   kind: runtime
   description: |
     deepin base environment.
 
 base:
-  id: deepin-foundation
-  version: 23.0.0.6
+  id: org.deepin.foundation
+  version: 23.0.0
 
-source:
-  kind: local
+sources:
+  - kind: local
 
 build:
   kind: manual
@@ -23,15 +23,26 @@ build:
     configure: |
       export PATH=/usr/bin:/bin
       export LD_LIBRARY_PATH=/usr/lib:/usr/lib/$TRIPLET
+      mkdir $PREFIX/runtime
+      mkdir $PREFIX/source
+      mkdir $PREFIX/dev
+      mkdir $PREFIX/root
       cp -ar org.deepin.foundation/bin $PREFIX/
       cp -ar org.deepin.foundation/boot $PREFIX/
+      #cp -ar org.deepin.foundation/dev $PREFIX/
       cp -ar org.deepin.foundation/etc $PREFIX/
       cp -ar org.deepin.foundation/home $PREFIX/
       cp -ar org.deepin.foundation/lib $PREFIX/
       cp -ar org.deepin.foundation/lib64 $PREFIX/
+      cp -ar org.deepin.foundation/media $PREFIX/
+      cp -ar org.deepin.foundation/mnt $PREFIX/
       cp -ar org.deepin.foundation/opt $PREFIX/
+      cp -ar org.deepin.foundation/proc $PREFIX/
+      #cp -ar org.deepin.foundation/root $PREFIX/
       cp -ar org.deepin.foundation/run $PREFIX/
       cp -ar org.deepin.foundation/sbin $PREFIX/
+      cp -ar org.deepin.foundation/srv $PREFIX/
+      cp -ar org.deepin.foundation/sys $PREFIX/
       cp -ar org.deepin.foundation/tmp $PREFIX/
       cp -ar org.deepin.foundation/usr $PREFIX/
       cp -ar org.deepin.foundation/var $PREFIX/
