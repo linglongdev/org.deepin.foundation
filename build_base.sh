@@ -23,9 +23,10 @@ esac
 BASE_REF=org.deepin.foundation
 
 # shellcheck source=/dev/null
-source ./package_list.sh
+#source ./package_list.sh
 
-whereis qemu-user-static || sudo apt-get install -y qemu-user-static
+dpkg -l | grep qemu-user-static || sudo apt-get install -y qemu-user-static
+dpkg -l | grep mmdebstrap || sudo apt-get install -y mmdebstrap
 
 sudo rm -rf ${BASE_REF}
 
@@ -33,7 +34,7 @@ sudo mmdebstrap \
 	--components="main,commercial,community" \
 	--variant=minbase \
 	--architectures="$ARCH" \
-	--include=elfutils,file,ca-certificates \
+	--include=elfutils,file,ca-certificates,apt,gcc,g++,cmake \
 	beige \
 	${BASE_REF} \
 	https://ci.deepin.com/repo/deepin/deepin-community/stable
