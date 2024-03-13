@@ -8,7 +8,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-set -x
+set -e
 
 ARCH=$1
 
@@ -25,8 +25,8 @@ BASE_REF=org.deepin.foundation
 # shellcheck source=/dev/null
 #source ./package_list.sh
 
-dpkg -l | grep qemu-user-static || sudo apt-get install -y qemu-user-static
-dpkg -l | grep mmdebstrap || sudo apt-get install -y mmdebstrap
+dpkg -l | grep qemu-user-static > /dev/null || sudo apt-get install -y qemu-user-static
+dpkg -l | grep mmdebstrap > /dev/null || sudo apt-get install -y mmdebstrap
 
 sudo rm -rf ${BASE_REF}
 
@@ -34,11 +34,23 @@ sudo mmdebstrap \
 	--components="main,commercial,community" \
 	--variant=minbase \
 	--architectures="$ARCH" \
-	--include=elfutils,file,ca-certificates,apt,gcc,g++,cmake \
+	--include=elfutils,file,ca-certificates \
 	beige \
 	${BASE_REF} \
 	https://ci.deepin.com/repo/deepin/deepin-community/stable
 
+sudo find ${BASE_REF} -printf "/runtime/%P\n" > org.deepin.foundation.install
+
+sudo rm -rf ${BASE_REF}
+
+sudo mmdebstrap \
+	--components="main,commercial,community" \
+	--variant=minbase \
+	--architectures="$ARCH" \
+	--include=elfutils,file,ca-certificates,binutils,tar,xz-utils,libc6-dev,gcc,g++,cmake \
+	beige \
+	${BASE_REF} \
+	https://ci.deepin.com/repo/deepin/deepin-community/stable
 
 sudo chown -R "${USER}": ${BASE_REF}
 
