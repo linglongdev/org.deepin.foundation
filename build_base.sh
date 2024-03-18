@@ -10,15 +10,32 @@
 
 set -e
 
-ARCH=$1
+DISTRO=$1
+ARCH=$2
 
-case $ARCH in
-    amd64);;
-    arm64);;
-    "") echo "enter an architecture, like ./checkout_base.sh amd64" && exit;;
-    *) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64" && exit;;
+case $DISTRO in
+    apricot)
+		case $ARCH in
+			amd64);;
+			"") echo "enter an architecture, like ./checkout_base.sh apricot amd64" && exit;;
+			*) echo "unknow arch \"$ARCH\", supported arch: amd64" && exit;;
+		esac
+		components="main,contrib,non-free"
+		source="https://community-packages.deepin.com/deepin/apricot/"
+		;;
+    beige)
+		case $ARCH in
+			amd64);;
+			arm64);;
+			"") echo "enter an architecture, like ./checkout_base.sh beige amd64" && exit;;
+			*) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64" && exit;;
+		esac
+		components="main,commercial,community"
+		source="https://community-packages.deepin.com/beige/"
+		;;
+    "") echo "enter an distro, like ./checkout_base.sh beige amd64" && exit;;
+    *) echo "unknow arch \"$DISTRO\", supported distro: apricot, beige" && exit;;
 esac
-
 
 BASE_REF=org.deepin.foundation
 
@@ -30,27 +47,26 @@ dpkg -l | grep mmdebstrap > /dev/null || sudo apt-get install -y mmdebstrap
 
 sudo rm -rf ${BASE_REF}
 
-sudo mmdebstrap \
-	--components="main,commercial,community" \
+runtime_command=sudo mmdebstrap \
+	--components=$components \
 	--variant=minbase \
 	--architectures="$ARCH" \
 	--include=elfutils,file,ca-certificates \
-	beige \
+	$DISTRO \
 	${BASE_REF} \
-	https://ci.deepin.com/repo/deepin/deepin-community/stable
-
+	$source
 sudo find ${BASE_REF} -printf "/runtime/%P\n" > org.deepin.foundation.install
 
 sudo rm -rf ${BASE_REF}
 
 sudo mmdebstrap \
-	--components="main,commercial,community" \
+	--components=$components \
 	--variant=minbase \
 	--architectures="$ARCH" \
 	--include=elfutils,file,ca-certificates,binutils,tar,xz-utils,libc6-dev,gcc,g++,cmake \
-	beige \
+	$DISTRO \
 	${BASE_REF} \
-	https://ci.deepin.com/repo/deepin/deepin-community/stable
+	$source
 
 sudo chown -R "${USER}": ${BASE_REF}
 
