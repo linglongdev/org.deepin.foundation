@@ -47,26 +47,28 @@ dpkg -l | grep mmdebstrap > /dev/null || sudo apt-get install -y mmdebstrap
 
 sudo rm -rf ${BASE_REF}
 
-runtime_command=sudo mmdebstrap \
-	--components=$components \
-	--variant=minbase \
-	--architectures="$ARCH" \
-	--include=elfutils,file,ca-certificates \
-	$DISTRO \
-	${BASE_REF} \
-	$source
+sudo mmdebstrap \
+        --customize-hook="./remove_default_package.sh" \
+        --components="main,contrib,non-free" \
+        --variant=minbase \
+        --architectures="$ARCH" \
+        --include=ca-certificates \
+        eagle \
+        ${BASE_REF} \
+        http://pools.uniontech.com/desktop-professional
+
 sudo find ${BASE_REF} -printf "/runtime/%P\n" > org.deepin.foundation.install
 
 sudo rm -rf ${BASE_REF}
 
 sudo mmdebstrap \
-	--components=$components \
-	--variant=minbase \
-	--architectures="$ARCH" \
-	--include=elfutils,file,ca-certificates,binutils,tar,xz-utils,libc6-dev,gcc,g++,cmake \
-	$DISTRO \
-	${BASE_REF} \
-	$source
+        --customize-hook="./remove_default_package.sh" \
+        --components="main,contrib,non-free" \
+        --variant=minbase \
+        --architectures="$ARCH" \
+        --include=elfutils,file,ca-certificates,apt,gcc,g++,cmake,xz-utils,libicu-dev \
+        eagle \
+        ${BASE_REF} \
+        http://pools.uniontech.com/desktop-professional
 
 sudo chown -R "${USER}": ${BASE_REF}
-
