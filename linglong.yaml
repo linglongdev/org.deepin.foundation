@@ -5,17 +5,14 @@
 package:
   id: org.deepin.foundation
   name: deepin-foundation
-  version: 23.0.0.8
+  version: 20.0.0.2
   kind: runtime
   description: |
     deepin base environment.
 
 base:
   id: org.deepin.foundation
-  version: 23.0.0
-
-sources:
-  - kind: local
+  version: 20.0.0
 
 build:
   kind: manual
