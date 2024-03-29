@@ -1,3 +1,8 @@
 .linglong-target
 org.deepin.foundation
 org.deepin.foundation.install
+excludedeblist
+excludelist
+rootfs
+pkg.list
+so.list
