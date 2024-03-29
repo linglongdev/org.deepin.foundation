@@ -5,41 +5,39 @@
 package:
   id: org.deepin.foundation
   name: deepin-foundation
-  version: 20.0.0.2
+  version: 20.0.0.3
   kind: runtime
   description: |
     deepin base environment.
 
 base:
   id: org.deepin.foundation
-  version: 20.0.0
+  version: 20.0.0.2
 
 build:
   kind: manual
   manual:
     configure: |
+      set -x
       export PATH=/usr/bin:/bin
       export LD_LIBRARY_PATH=/usr/lib:/usr/lib/$TRIPLET
-      mkdir $PREFIX/runtime
-      mkdir $PREFIX/source
-      mkdir $PREFIX/dev
-      mkdir $PREFIX/root
-      cp -ar org.deepin.foundation/bin $PREFIX/
-      cp -ar org.deepin.foundation/boot $PREFIX/
-      #cp -ar org.deepin.foundation/dev $PREFIX/
-      cp -ar org.deepin.foundation/etc $PREFIX/
-      cp -ar org.deepin.foundation/home $PREFIX/
-      cp -ar org.deepin.foundation/lib $PREFIX/
-      cp -ar org.deepin.foundation/lib64 $PREFIX/
-      cp -ar org.deepin.foundation/media $PREFIX/
-      cp -ar org.deepin.foundation/mnt $PREFIX/
-      cp -ar org.deepin.foundation/opt $PREFIX/
-      cp -ar org.deepin.foundation/proc $PREFIX/
-      #cp -ar org.deepin.foundation/root $PREFIX/
-      cp -ar org.deepin.foundation/run $PREFIX/
-      cp -ar org.deepin.foundation/sbin $PREFIX/
-      cp -ar org.deepin.foundation/srv $PREFIX/
-      cp -ar org.deepin.foundation/sys $PREFIX/
-      cp -ar org.deepin.foundation/tmp $PREFIX/
-      cp -ar org.deepin.foundation/usr $PREFIX/
-      cp -ar org.deepin.foundation/var $PREFIX/
+      cp -ar rootfs/bin $PREFIX/
+      cp -ar rootfs/boot $PREFIX/
+      #cp -ar rootfs/dev $PREFIX/
+      cp -ar rootfs/etc $PREFIX/
+      cp -ar rootfs/home $PREFIX/
+      cp -ar rootfs/lib $PREFIX/
+      cp -ar rootfs/lib64 $PREFIX/
+      cp -ar rootfs/media $PREFIX/
+      cp -ar rootfs/mnt $PREFIX/
+      cp -ar rootfs/opt $PREFIX/
+      cp -ar rootfs/proc $PREFIX/
+      #cp -ar rootfs/root $PREFIX/
+      cp -ar rootfs/run $PREFIX/
+      cp -ar rootfs/sbin $PREFIX/
+      cp -ar rootfs/srv $PREFIX/
+      cp -ar rootfs/sys $PREFIX/
+      cp -ar rootfs/tmp $PREFIX/
+      cp -ar rootfs/usr $PREFIX/
+      cp -ar rootfs/var $PREFIX/
+      set +x
