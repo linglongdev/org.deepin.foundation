@@ -8,5 +8,6 @@ set -e
 apt-get -y update
 apt-get -y remove uos-license-upgrade
 apt-get -y autoremove
+apt-get clean
 # apt生成的配置文件权限是444，会在构建玲珑时因无法复制出错
 chmod 644 /etc/apt/apt.conf.d/01autoremove-kernels || true
