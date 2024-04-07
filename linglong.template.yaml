@@ -5,7 +5,7 @@
 package:
   id: org.deepin.foundation
   name: deepin-foundation
-  version: 20.0.0.4
+  version: $VERSION
   kind: runtime
   description: |
     deepin base environment.
@@ -23,7 +23,9 @@ build:
       export LD_LIBRARY_PATH=/usr/lib:/usr/lib/$TRIPLET
       cp -ar rootfs/bin $PREFIX/
       cp -ar rootfs/boot $PREFIX/
-      #cp -ar rootfs/dev $PREFIX/
+      # cp -ar rootfs/dev $PREFIX/ 
+      mkdir $PREFIX/dev
+      cp -ar rootfs/runtime $PREFIX/ 
       cp -ar rootfs/etc $PREFIX/
       cp -ar rootfs/home $PREFIX/
       cp -ar rootfs/lib $PREFIX/
@@ -33,6 +35,7 @@ build:
       cp -ar rootfs/opt $PREFIX/
       cp -ar rootfs/proc $PREFIX/
       #cp -ar rootfs/root $PREFIX/
+      mkdir $PREFIX/root
       cp -ar rootfs/run $PREFIX/
       cp -ar rootfs/sbin $PREFIX/
       cp -ar rootfs/srv $PREFIX/
@@ -41,3 +44,4 @@ build:
       cp -ar rootfs/usr $PREFIX/
       cp -ar rootfs/var $PREFIX/
       set +x
+      bash

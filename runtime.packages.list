@@ -45,6 +45,7 @@ libasound2-data
 libatk-bridge2.0-0
 libatk1.0-0
 libatk1.0-data
+libatomic1
 libatspi2.0-0
 libattr1
 libaudit-common
@@ -109,6 +110,7 @@ libglx-mesa0
 libglx0
 libgmp10
 libgnutls30
+libgomp1
 libgpg-error0
 libgraphite2-3
 libgssapi-krb5-2
