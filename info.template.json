@@ -1,0 +1,15 @@
+{
+  "appid": "org.deepin.foundation",
+  "arch": ["x86_64"],
+  "base": "org.deepin.foundation/20.0.2",
+  "description": "deepin base environment.\n",
+  "kind": "runtime",
+  "module": "$MODULE",
+  "name": "deepin-foundation",
+  "overlayfs": {},
+  "permissions": {},
+  "runtime": "latest",
+  "size": 413747564,
+  "version": "$VERSION",
+  "channel": "main"
+}

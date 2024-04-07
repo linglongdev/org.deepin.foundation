@@ -11,3 +11,10 @@ apt-get -y autoremove
 apt-get clean
 # apt生成的配置文件权限是444，会在构建玲珑时因无法复制出错
 chmod 644 /etc/apt/apt.conf.d/01autoremove-kernels || true
+# 玲珑需要的挂载点
+mkdir -p /runtime /dev /opt/apps 
+# linux微信需要的挂载点
+mkdir -p /apps-data /var/lib/uos-license /var/uos /usr/lib/license
+touch /usr/lib/license/libuosdevicea.so /etc/lsb-release /usr/lib/os-release
+# ldconfig 需要
+touch /etc/ld.so.cache~ /etc/ld.so.conf.d/zz_deepin-linglong-app.conf

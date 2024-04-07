@@ -6,3 +6,7 @@ excludelist
 rootfs
 pkg.list
 so.list
+linglong
+runtime
+devel
+linglong.yaml
