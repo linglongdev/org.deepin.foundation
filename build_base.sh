@@ -30,12 +30,12 @@ dpkg -l | grep qemu-user-static > /dev/null || sudo apt-get install -y qemu-user
 dpkg -l | grep mmdebstrap > /dev/null || sudo apt-get install -y mmdebstrap
 
 
-export VERSION="20.0.0.10"
+export VERSION="20.0.0.11"
 export CHANNEL="main"
 
 # 生成rootfs
 sudo tmux new-session -d -s "create rootfs"
-sudo tmux send-keys "./create_rootfs.sh devel $ARCH $VERSION; echo create devel rootfs success" Enter
+sudo tmux send-keys "./create_rootfs.sh develop $ARCH $VERSION; echo create develop rootfs success" Enter
 sudo tmux split-window -v -t "create rootfs"
 sudo tmux send-keys "./create_rootfs.sh runtime $ARCH $VERSION; echo create runtime rootfs success" Enter
 sudo tmux attach-session
@@ -45,7 +45,7 @@ rootfs=runtime/files
 sudo rm -rf "$rootfs/usr/share/doc/*" "$rootfs/usr/share/man/*" "$rootfs/usr/share/icons/*"
 
 
-for model in runtime devel; do
+for model in runtime develop; do
         echo $model
         sudo chown -R "${USER}": $model
         # 清理dev
@@ -61,6 +61,8 @@ for model in runtime devel; do
         grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "$model.packages.list"
         # 提交到ostree
         ostree commit --repo "$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" $model
+        rm -rf "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model"
+        ostree checkout "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model"
 done
 
 envsubst < linglong.template.yaml > "linglong.yaml"

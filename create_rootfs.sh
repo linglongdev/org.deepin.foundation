@@ -13,9 +13,9 @@ arch="$2"
 
 case $model in
     runtime);;
-    devel);;
+    develop);;
     "") echo "enter an model, like ./create_rootfs.sh runtime amd64" && exit;;
-    *) echo "unknow model \"$model\", supported model: runtime, devel" && exit;;
+    *) echo "unknow model \"$model\", supported model: runtime, develop" && exit;;
 esac
 
 
@@ -129,9 +129,9 @@ runtimePackages+=(
         libatomic1
 )
 
-develPackages=("${runtimePackages[@]}")
+developPackages=("${runtimePackages[@]}")
 
-develPackages+=(
+developPackages+=(
 elfutils
 file
 apt
@@ -142,13 +142,13 @@ cmake
 xz-utils
 libicu-dev
 )
-develPackages+=(
+developPackages+=(
         libice-dev # libice6 的开发包
         libglvnd-dev # libopengl0 的开发包
 )
 # 通过空链接脚本检查出来的，base中的lib包需要将对应的dev包也安装上
 # 否则应用构建时将dev包安装到非标准路径，dev包里面使用相对引用的软链接会无效
-develPackages+=(
+developPackages+=(
         libxkbcommon-dev
         libxrandr-dev
         librsvg2-dev
@@ -209,7 +209,7 @@ develPackages+=(
 )
 
 # libxcb的附加包里面有 include "xcb.h"，所以需要把所有包都放进去
-develPackages+=(
+developPackages+=(
         libxcb1-dev
         libxcb-composite0-dev
         libxcb-damage0-dev
@@ -247,8 +247,8 @@ case $model in
     runtime)
         include=$(join_by , "${runtimePackages[@]}")
         ;;
-    devel)
-        include=$(join_by , "${develPackages[@]}")
+    develop)
+        include=$(join_by , "${developPackages[@]}")
         ;;
 esac
 mmdebstrap \
