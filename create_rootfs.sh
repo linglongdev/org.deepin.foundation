@@ -254,7 +254,7 @@ case $model in
 esac
 mmdebstrap \
         --customize-hook="chroot $rootfs /bin/bash < hook.sh" \
-        --components="main,contrib,non-free" \
+        --components="main" \
         --variant=minbase \
         --architectures="$arch" \
         --include="$include" \
