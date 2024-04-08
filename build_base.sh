@@ -9,7 +9,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 set -e
-
+set -x
 ARCH=$1
 LINGLONG_ARCH=""
 case $ARCH in
@@ -29,9 +29,8 @@ esac
 # shellcheck source=/dev/null
 #source ./package_list.sh
 
-dpkg -l | grep qemu-user-static > /dev/null || sudo apt-get install -y qemu-user-static
 dpkg -l | grep mmdebstrap > /dev/null || sudo apt-get install -y mmdebstrap
-
+dpkg -l | grep tmux > /dev/null || sudo apt-get install -y tmux
 
 export VERSION="20.0.0.11"
 export CHANNEL="main"
@@ -63,9 +62,10 @@ for model in runtime develop; do
         # 生成package.list
         grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "$model.packages.list"
         # 提交到ostree
-        ostree commit --repo "$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" $model
-        rm -rf "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model"
-        ostree checkout "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model"
+        ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" $model
+        rm -rf "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" || true
+        mkdir -p "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH" || true
+        ostree --repo="$HOME/.cache/linglong-builder/repo" checkout "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model"
 done
 
 envsubst < linglong.template.yaml > "linglong.yaml"
