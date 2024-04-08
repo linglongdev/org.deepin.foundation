@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
-
+version: "1"
 package:
   id: org.deepin.foundation
   name: deepin-foundation
@@ -10,9 +10,7 @@ package:
   description: |
     deepin base environment.
 
-base:
-  id: org.deepin.foundation
-  version: 20.0.0.2
+base: org.deepin.foundation/20.0.0.2
 
 build: |
   echo skip
