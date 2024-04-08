@@ -1,4 +1,13 @@
 #!/bin/bash
+
+# Copyright (c) 2022. Uniontech Software Ltd. All rights reserved.
+#
+# Author:     wurongjie <wurongjie@deepin.org>
+#
+# Maintainer: wurongjie <wurongjie@deepin.org>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 model="$1"
 arch="$2"
 
