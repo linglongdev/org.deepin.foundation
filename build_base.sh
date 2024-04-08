@@ -19,11 +19,11 @@ case $ARCH in
     arm64)
         LINGLONG_ARCH="arm64"
         ;;
-    loong64)
-        LINGLONG_ARCH="loong64"
+    loongarch64)
+        LINGLONG_ARCH="loongarch64"
         ;;
     "") echo "enter an architecture, like ./checkout_base.sh amd64" && exit;;
-    *) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64, loong64" && exit;;
+    *) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64, loongarch64" && exit;;
 esac
 
 # shellcheck source=/dev/null
