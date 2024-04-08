@@ -14,34 +14,5 @@ base:
   id: org.deepin.foundation
   version: 20.0.0.2
 
-build:
-  kind: manual
-  manual:
-    configure: |
-      set -x
-      export PATH=/usr/bin:/bin
-      export LD_LIBRARY_PATH=/usr/lib:/usr/lib/$TRIPLET
-      cp -ar rootfs/bin $PREFIX/
-      cp -ar rootfs/boot $PREFIX/
-      # cp -ar rootfs/dev $PREFIX/ 
-      mkdir $PREFIX/dev
-      cp -ar rootfs/runtime $PREFIX/ 
-      cp -ar rootfs/etc $PREFIX/
-      cp -ar rootfs/home $PREFIX/
-      cp -ar rootfs/lib $PREFIX/
-      cp -ar rootfs/lib64 $PREFIX/ || true
-      cp -ar rootfs/media $PREFIX/
-      cp -ar rootfs/mnt $PREFIX/
-      cp -ar rootfs/opt $PREFIX/
-      cp -ar rootfs/proc $PREFIX/
-      #cp -ar rootfs/root $PREFIX/
-      mkdir $PREFIX/root
-      cp -ar rootfs/run $PREFIX/
-      cp -ar rootfs/sbin $PREFIX/
-      cp -ar rootfs/srv $PREFIX/
-      cp -ar rootfs/sys $PREFIX/
-      cp -ar rootfs/tmp $PREFIX/
-      cp -ar rootfs/usr $PREFIX/
-      cp -ar rootfs/var $PREFIX/
-      set +x
-      bash
+build: |
+  echo skip
