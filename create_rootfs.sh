@@ -22,8 +22,9 @@ esac
 case $arch in
     amd64);;
     arm64);;
+    loong64);;
     "") echo "enter an architecture, like ./create_rootfs.sh runtime amd64" && exit;;
-    *) echo "unknow arch \"$arch\", supported arch: amd64, arm64" && exit;;
+    *) echo "unknow arch \"$arch\", supported arch: amd64, arm64, loong64" && exit;;
 esac
 
 

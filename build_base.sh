@@ -19,8 +19,11 @@ case $ARCH in
     arm64)
         LINGLONG_ARCH="arm64"
         ;;
+    loong64)
+        LINGLONG_ARCH="loong64"
+        ;;
     "") echo "enter an architecture, like ./checkout_base.sh amd64" && exit;;
-    *) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64" && exit;;
+    *) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64, loong64" && exit;;
 esac
 
 # shellcheck source=/dev/null
@@ -35,9 +38,9 @@ export CHANNEL="main"
 
 # 生成rootfs
 sudo tmux new-session -d -s "create rootfs"
-sudo tmux send-keys "./create_rootfs.sh develop $ARCH $VERSION; echo create develop rootfs success" Enter
+sudo tmux send-keys "./create_rootfs.sh develop $ARCH $VERSION && echo create develop rootfs success && exit" Enter
 sudo tmux split-window -v -t "create rootfs"
-sudo tmux send-keys "./create_rootfs.sh runtime $ARCH $VERSION; echo create runtime rootfs success" Enter
+sudo tmux send-keys "./create_rootfs.sh runtime $ARCH $VERSION && echo create runtime rootfs success && exit" Enter
 sudo tmux attach-session
 
 rootfs=runtime/files
