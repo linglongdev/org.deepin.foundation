@@ -10,31 +10,17 @@
 
 set -e
 
-DISTRO=$1
-ARCH=$2
-
-case $DISTRO in
-    apricot)
-		case $ARCH in
-			amd64);;
-			"") echo "enter an architecture, like ./checkout_base.sh apricot amd64" && exit;;
-			*) echo "unknow arch \"$ARCH\", supported arch: amd64" && exit;;
-		esac
-		components="main,contrib,non-free"
-		source="https://community-packages.deepin.com/deepin/apricot/"
-		;;
-    beige)
-		case $ARCH in
-			amd64);;
-			arm64);;
-			"") echo "enter an architecture, like ./checkout_base.sh beige amd64" && exit;;
-			*) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64" && exit;;
-		esac
-		components="main,commercial,community"
-		source="https://community-packages.deepin.com/beige/"
-		;;
-    "") echo "enter an distro, like ./checkout_base.sh beige amd64" && exit;;
-    *) echo "unknow arch \"$DISTRO\", supported distro: apricot, beige" && exit;;
+ARCH=$1
+LINGLONG_ARCH=""
+case $ARCH in
+    amd64)
+        LINGLONG_ARCH="x86_64"
+        ;;
+    arm64)
+        LINGLONG_ARCH="arm64"
+        ;;
+    "") echo "enter an architecture, like ./checkout_base.sh amd64" && exit;;
+    *) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64" && exit;;
 esac
 
 # shellcheck source=/dev/null
@@ -74,7 +60,7 @@ for model in runtime devel; do
         # 生成package.list
         grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "$model.packages.list"
         # 提交到ostree
-        ostree commit --repo "$HOME/.cache/linglong-builder/repo" -b $CHANNEL/org.deepin.foundation/$VERSION/x86_64/$model $model
+        ostree commit --repo "$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" $model
 done
 
 envsubst < linglong.template.yaml > "linglong.yaml"
