@@ -60,7 +60,7 @@ for model in runtime develop; do
         # 生成linglong.yaml
         envsubst < linglong.template.yaml > "$model/linglong.yaml"
         # 生成package.list
-        grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "$model.packages.list"
+        grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "$model.$LINGLONG_ARCH.packages.list"
         # 提交到ostree
         ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" $model
         rm -rf "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" || true
