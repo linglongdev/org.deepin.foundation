@@ -1,6 +1,6 @@
 {
   "appid": "org.deepin.foundation",
-  "arch": ["x86_64"],
+  "arch": ["$LINGLONG_ARCH"],
   "base": "org.deepin.foundation/20.0.2",
   "description": "deepin base environment.\n",
   "kind": "runtime",
