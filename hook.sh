@@ -6,7 +6,7 @@ set -e
 /usr/lib/dpkg/methods/apt/update /var/lib/dpkg
 # mibase有个多余的uos-license-upgrade，将它和依赖卸载
 apt-get -y update
-apt-get -y remove uos-license-upgrade
+apt-get -y remove uos-license-upgrade || true
 apt-get -y autoremove
 apt-get clean
 # apt生成的配置文件权限是444，会在构建玲珑时因无法复制出错

@@ -46,9 +46,9 @@ rootfs=runtime/files
 # 删除runtime的文档内容
 sudo rm -rf "$rootfs/usr/share/doc/*" "$rootfs/usr/share/man/*" "$rootfs/usr/share/icons/*"
 
-
 for model in runtime develop; do
         echo $model
+        # 更改文件权限
         sudo chown -R "${USER}": $model
         # 清理dev
         sudo rm -rf "$model/files/dev" || true
@@ -61,8 +61,11 @@ for model in runtime develop; do
         envsubst < linglong.template.yaml > "$model/linglong.yaml"
         # 生成package.list
         grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "$model.$LINGLONG_ARCH.packages.list"
+        # 复制 profile.d目录
+        cp -rP profile.d "$model/files/etc/"
         # 提交到ostree
         ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" $model
+        # checkout到layers目录
         rm -rf "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" || true
         mkdir -p "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH" || true
         ostree --repo="$HOME/.cache/linglong-builder/repo" checkout "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model"
