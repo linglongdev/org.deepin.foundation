@@ -258,6 +258,6 @@ mmdebstrap \
         --variant=minbase \
         --architectures="$arch" \
         --include="$include" \
-        eagle \
+        apricot \
         "$rootfs" \
-        http://pools.uniontech.com/desktop-professional
+        http://pools.uniontech.com/deepin
