@@ -11,7 +11,7 @@
 set -e
 set -x
 ARCH=$1
-LINGLONG_ARCH=""
+export LINGLONG_ARCH=""
 case $ARCH in
     amd64)
         LINGLONG_ARCH="x86_64"
@@ -32,7 +32,7 @@ esac
 dpkg -l | grep mmdebstrap > /dev/null || sudo apt-get install -y mmdebstrap
 dpkg -l | grep tmux > /dev/null || sudo apt-get install -y tmux
 
-export VERSION="20.0.0.12"
+export VERSION="20.0.0.13"
 export CHANNEL="main"
 
 # 生成rootfs
