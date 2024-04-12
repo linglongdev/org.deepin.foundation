@@ -32,7 +32,7 @@ esac
 dpkg -l | grep mmdebstrap > /dev/null || sudo apt-get install -y mmdebstrap
 dpkg -l | grep tmux > /dev/null || sudo apt-get install -y tmux
 
-export VERSION="20.0.0.14"
+export VERSION="23.0.0.15"
 export CHANNEL="main"
 
 # 生成rootfs

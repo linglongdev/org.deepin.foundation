@@ -59,13 +59,13 @@ runtimePackages+=(
         libcups2
         libdbus-1-3
         libdrm2
-        libegl1-mesa
+        # libegl1-mesa # v23没有这个包
         libfontconfig1
         libgbm1
         libgdk-pixbuf2.0-0
         libgl1
         # libgl1-mesa # 仓库没有这个包
-        # libgl1-mesa-dri # 仓库没有这个包
+        libgl1-mesa-dri
         # libgl1-mesa-glx # 仓库没有这个包
         libglu1-mesa
         libgtk2.0-0
@@ -253,11 +253,12 @@ case $model in
         ;;
 esac
 mmdebstrap \
+        --hook-dir=/usr/share/mmdebstrap/hooks/merged-usr \
         --customize-hook="chroot $rootfs /bin/bash < hook.sh" \
         --components="main" \
         --variant=minbase \
         --architectures="$arch" \
         --include="$include" \
-        eagle \
+        beige \
         "$rootfs" \
-        http://pools.uniontech.com/desktop-professional
+        https://community-packages.deepin.com/deepin/beige
