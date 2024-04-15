@@ -10,7 +10,19 @@
 
 set -e
 set -x
-ARCH=$1
+
+DISTRO=$1
+ARCH=$2
+
+
+if [ -s "$DISTRO" ]; then
+    echo "enter an distro, like ./build_base.sh beige amd64" 
+    exit
+elif [ ! -e "create_rootfs/$DISTRO" ]; then
+    echo "unknow distro \"$DISTRO\", supported distro: `ls create_rootfs|tr '\n' ','`"
+    exit
+fi
+
 export LINGLONG_ARCH=""
 case $ARCH in
     amd64)
@@ -32,14 +44,15 @@ esac
 dpkg -l | grep mmdebstrap > /dev/null || sudo apt-get install -y mmdebstrap
 dpkg -l | grep tmux > /dev/null || sudo apt-get install -y tmux
 
-export VERSION="20.0.0.14"
-export CHANNEL="main"
+# shellcheck source=/dev/null
+source "./create_rootfs/$DISTRO/version.sh"
+CHANNEL="main"
 
 # 生成rootfs
 sudo tmux new-session -d -s "create rootfs"
-sudo tmux send-keys "./create_rootfs.sh develop $ARCH $VERSION && echo create develop rootfs success && exit" Enter
+sudo tmux send-keys "./create_rootfs/$DISTRO/create_rootfs.sh develop $ARCH && echo create develop rootfs success && exit" Enter
 sudo tmux split-window -v -t "create rootfs"
-sudo tmux send-keys "./create_rootfs.sh runtime $ARCH $VERSION && echo create runtime rootfs success && exit" Enter
+sudo tmux send-keys "./create_rootfs/$DISTRO/create_rootfs.sh runtime $ARCH && echo create runtime rootfs success && exit" Enter
 sudo tmux attach-session
 
 rootfs=runtime/files
@@ -60,9 +73,9 @@ for model in runtime develop; do
         # 生成linglong.yaml
         envsubst < linglong.template.yaml > "$model/linglong.yaml"
         # 生成package.list
-        grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "$model.$LINGLONG_ARCH.packages.list"
+        grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "./create_rootfs/$DISTRO/$LINGLONG_ARCH.$model.packages.list"
         # 复制 profile.d目录
-        cp -rP profile.d "$model/files/etc/"
+        cp -rP patch_rootfs/* "$model/files/"
         # 提交到ostree
         ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" $model
         # checkout到layers目录
