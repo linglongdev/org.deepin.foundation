@@ -12,3 +12,7 @@ export PATH="${PATH%:}"
 export LIBRARY_PATH="${LIBRARY_PATH%:}"
 export LD_LIBRARY_PATH="$LIBRARY_PATH"
 export PKG_CONFIG_PATH="${PKG_CONFIG_PATH%:}"
+
+# TODO should set to org.deepin.Runtime
+export QT_QPA_PLATFORM_PLUGIN_PATH=/runtime/lib/${TRIPLET}/qt5/plugins/platforms
+export QT_PLUGIN_PATH=/runtime/lib/${TRIPLET}/qt5/plugins
