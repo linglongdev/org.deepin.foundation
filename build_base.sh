@@ -34,7 +34,7 @@ case $ARCH in
     loongarch64)
         LINGLONG_ARCH="loongarch64"
         ;;
-    "") echo "enter an architecture, like ./checkout_base.sh amd64" && exit;;
+    "") echo "enter an architecture, like ./build_base.sh beige amd64" && exit;;
     *) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64, loongarch64" && exit;;
 esac
 
