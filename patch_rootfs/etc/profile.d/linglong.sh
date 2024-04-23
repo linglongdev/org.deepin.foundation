@@ -1,6 +1,6 @@
 #!/bin/sh
 
-dirs="$PREFIX /runtime /usr ''"
+dirs="/opt/apps/$LINGLONG_APPID/files /runtime /usr ''"
 for dir in $dirs; do
     dir=$(echo "$dir" | tr -d "'")
     PATH=$dir/bin:$PATH
