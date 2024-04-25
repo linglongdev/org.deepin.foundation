@@ -23,16 +23,18 @@ elif [ ! -e "create_rootfs/$DISTRO" ]; then
     exit
 fi
 
-export LINGLONG_ARCH=""
 case $ARCH in
     amd64)
         LINGLONG_ARCH="x86_64"
+        TRIPLET_LIST="x86_64-linux-gnu"
         ;;
     arm64)
         LINGLONG_ARCH="arm64"
+        TRIPLET_LIST="aarch64-linux-gnu"
         ;;
     loongarch64)
         LINGLONG_ARCH="loongarch64"
+        TRIPLET_LIST="loongarch64-linux-gnu"
         ;;
     "") echo "enter an architecture, like ./build_base.sh beige amd64" && exit;;
     *) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64, loongarch64" && exit;;
@@ -76,6 +78,8 @@ for model in runtime develop; do
         grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "./create_rootfs/$DISTRO/$LINGLONG_ARCH.$model.packages.list"
         # 复制 profile.d目录
         cp -rP patch_rootfs/* "$model/files/"
+        # 生成 linglong-triplet-list
+        echo "$TRIPLET_LIST" > "$model/files/etc/linglong-triplet-list"
         # 提交到ostree
         ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" $model
         # checkout到layers目录

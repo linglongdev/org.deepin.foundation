@@ -33,7 +33,9 @@ mkdir "$model"
 rootfs="$model/files"
 
 runtimePackages=(
+        libxss1
         ca-certificates
+        deepin-desktop-base
 )
 # 以下列表来自pkg2appimage的excludedeblist
 runtimePackages+=(
@@ -141,7 +143,9 @@ g++
 gdb
 cmake
 xz-utils
-libicu-dev
+libicu-dev # libicu 的开发包
+libxss-dev # libxss 的开发包
+patchelf
 )
 developPackages+=(
         libice-dev # libice6 的开发包
