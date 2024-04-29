@@ -34,6 +34,7 @@ dpkg-dev
 e2fsprogs
 eject
 elfutils
+emacsen-common
 fdisk
 file
 findutils
@@ -277,6 +278,7 @@ libpangocairo-1.0-0
 libpangoft2-1.0-0
 libpangox-1.0-0
 libpangoxft-1.0-0
+libpciaccess-dev
 libpciaccess0
 libpcre16-3
 libpcre3

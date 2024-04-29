@@ -59,7 +59,7 @@ sudo tmux attach-session
 
 rootfs=runtime/files
 # 删除runtime的文档内容
-sudo rm -rf "$rootfs/usr/share/doc/*" "$rootfs/usr/share/man/*" "$rootfs/usr/share/icons/*"
+sudo rm -rf "$rootfs/usr/share/doc/" "$rootfs/usr/share/man/" "$rootfs/usr/share/icons/"
 
 for model in runtime develop; do
         echo $model
@@ -71,7 +71,7 @@ for model in runtime develop; do
         # 生成install
         sudo find "runtime/files" > $model/org.deepin.foundation.install
         # 生成info.json
-        MODULE=$model envsubst < info.template.json > "$model/info.json"
+        MODULE=$model LINGLONG_ARCH=$LINGLONG_ARCH envsubst < info.template.json > "$model/info.json"
         # 生成linglong.yaml
         envsubst < linglong.template.yaml > "$model/linglong.yaml"
         # 生成package.list

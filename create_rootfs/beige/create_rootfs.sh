@@ -61,13 +61,13 @@ runtimePackages+=(
         libcups2
         libdbus-1-3
         libdrm2
-        libegl1-mesa
+        # libegl1-mesa # v23没有这个包
         libfontconfig1
         libgbm1
         libgdk-pixbuf2.0-0
         libgl1
         # libgl1-mesa # 仓库没有这个包
-        # libgl1-mesa-dri # 仓库没有这个包
+        libgl1-mesa-dri
         # libgl1-mesa-glx # 仓库没有这个包
         libglu1-mesa
         libgtk2.0-0
@@ -126,10 +126,89 @@ runtimePackages+=(
         libxcb-xkb1
 )
 
-# 来自gcc的包
+
 runtimePackages+=(
-        libgomp1
+        libarchive13
+        libasan8
+        libasm1
         libatomic1
+        libbabeltrace1
+        libbinutils
+        libboost-regex1.74.0
+        libcairo-script-interpreter2
+        libcc1-0
+        libctf-nobfd0
+        libctf0
+        libcurl3-gnutls
+        libcurl4
+        libdebuginfod-common
+        libdebuginfod1
+        libdpkg-perl
+        libdw1
+        libegl-mesa0
+        libegl1
+        libevent-2.1-7
+        libgirepository-1.0-1
+        libgles1
+        libgles2
+        libglib2.0-data
+        libgmpxx4ldbl
+        libgnutls-dane0
+        libgnutls-openssl27
+        libgnutlsxx30
+        libgomp1
+        libgprofng0
+        libharfbuzz-cairo0
+        libharfbuzz-gobject0
+        libharfbuzz-icu0
+        libharfbuzz-subset0
+        libhwasan0
+        libipt2
+        libisl23
+        libitm1
+        libjansson4
+        libjsoncpp24
+        libldap-2.5-0
+        liblsan0
+        liblzo2-2
+        libmagic-mgc
+        libmagic1
+        libmpc3
+        libmpfr6
+        libncursesw6
+        libnghttp2-14
+        libpcre2-16-0
+        libpcre2-32-0
+        libpcre2-posix3
+        libpcre3
+        libpcrecpp0v5
+        libpkgconf3
+        libproc2-0
+        libpsl5
+        libpython3-stdlib
+        libpython3.11
+        libpython3.11-minimal
+        libpython3.11-stdlib
+        libquadmath0
+        libreadline8
+        librhash0
+        librsvg2-2
+        librsvg2-common
+        librtmp1
+        libsasl2-2
+        libsasl2-modules-db
+        libsframe1
+        libsource-highlight-common
+        libsource-highlight4v5
+        libssh2-1
+        libtiffxx6
+        libtsan2
+        libubsan1
+        libunbound8
+        libuv1
+        libwebpdecoder3
+        libwebpdemux2
+        libwebpmux3
 )
 
 developPackages=("${runtimePackages[@]}")
@@ -257,11 +336,12 @@ case $model in
         ;;
 esac
 mmdebstrap \
+        --hook-dir=/usr/share/mmdebstrap/hooks/merged-usr \
         --customize-hook="chroot $rootfs /bin/bash < hook.sh" \
         --components="main" \
         --variant=minbase \
         --architectures="$arch" \
         --include="$include" \
-        apricot \
+        beige \
         "$rootfs" \
-        http://pools.uniontech.com/deepin
+        https://community-packages.deepin.com/deepin/beige
