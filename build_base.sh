@@ -43,12 +43,18 @@ esac
 # shellcheck source=/dev/null
 #source ./package_list.sh
 
+# install depends
 dpkg -l | grep mmdebstrap > /dev/null || sudo apt-get install -y mmdebstrap
 dpkg -l | grep tmux > /dev/null || sudo apt-get install -y tmux
+dpkg -l | grep linglong-builder > /dev/null || sudo apt-get install -y linglong-builder
+
+# init ostree repo
+ll-builder -h > /dev/null
 
 # shellcheck source=/dev/null
 source "./create_rootfs/$DISTRO/version.sh"
-CHANNEL="main"
+export CHANNEL="main"
+export LINGLONG_ARCH
 
 # 生成rootfs
 sudo tmux new-session -d -s "create rootfs"
@@ -69,9 +75,9 @@ for model in runtime develop; do
         sudo rm -rf "$model/files/dev" || true
         mkdir "$model/files/dev"
         # 生成install
-        sudo find "runtime/files" > $model/org.deepin.foundation.install
+        find "runtime/files" > "$model/$APPID.install"
         # 生成info.json
-        MODULE=$model LINGLONG_ARCH=$LINGLONG_ARCH envsubst < info.template.json > "$model/info.json"
+        envsubst < info.template.json > "$model/info.json"
         # 生成linglong.yaml
         envsubst < linglong.template.yaml > "$model/linglong.yaml"
         # 生成package.list
@@ -81,11 +87,11 @@ for model in runtime develop; do
         # 生成 linglong-triplet-list
         echo "$TRIPLET_LIST" > "$model/files/etc/linglong-triplet-list"
         # 提交到ostree
-        ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" $model
+        ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$model" $model
         # checkout到layers目录
-        rm -rf "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" || true
-        mkdir -p "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH" || true
-        ostree --repo="$HOME/.cache/linglong-builder/repo" checkout "$CHANNEL/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model" "$HOME/.cache/linglong-builder/layers/main/org.deepin.foundation/$VERSION/$LINGLONG_ARCH/$model"
+        rm -rf "$HOME/.cache/linglong-builder/layers/main/$APPID/$VERSION/$LINGLONG_ARCH/$model" || true
+        mkdir -p "$HOME/.cache/linglong-builder/layers/main/$APPID/$VERSION/$LINGLONG_ARCH" || true
+        ostree --repo="$HOME/.cache/linglong-builder/repo" checkout "$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$model" "$HOME/.cache/linglong-builder/layers/main/$APPID/$VERSION/$LINGLONG_ARCH/$model"
 done
 
 envsubst < linglong.template.yaml > "linglong.yaml"

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: LGPL-3.0-or-later
 version: "1"
 package:
-  id: org.deepin.foundation
+  id: $APPID
   name: deepin-foundation
   version: $VERSION
   kind: runtime
