@@ -57,35 +57,28 @@ export CHANNEL="main"
 export LINGLONG_ARCH
 
 # 生成rootfs
-sudo tmux new-session -d -s "create rootfs"
-sudo tmux send-keys "./create_rootfs/$DISTRO/create_rootfs.sh develop $ARCH && echo create develop rootfs success && exit" Enter
-sudo tmux split-window -v -t "create rootfs"
-sudo tmux send-keys "./create_rootfs/$DISTRO/create_rootfs.sh runtime $ARCH && echo create runtime rootfs success && exit" Enter
-sudo tmux attach-session
-
-rootfs=runtime/files
-# 删除runtime的文档内容
-sudo rm -rf "$rootfs/usr/share/doc/" "$rootfs/usr/share/man/" "$rootfs/usr/share/icons/"
+tmux new-session -d -s "create rootfs"
+tmux send-keys "./create_rootfs/$DISTRO/create_rootfs.sh develop $ARCH && echo create develop rootfs success && exit" Enter
+tmux split-window -v -t "create rootfs"
+tmux send-keys "./create_rootfs/$DISTRO/create_rootfs.sh runtime $ARCH && echo create runtime rootfs success && exit" Enter
+tmux attach-session
 
 for model in runtime develop; do
         echo $model
-        # 更改文件权限
-        sudo chown -R "${USER}": $model
-        # 清理dev
-        sudo rm -rf "$model/files/dev" || true
-        mkdir "$model/files/dev"
+        # 复制patch_rootfs目录
+        cp -rP patch_rootfs/* "$model/files/"
+        # 生成 linglong-triplet-list
+        echo "$TRIPLET_LIST" > "$model/files/etc/linglong-triplet-list"
         # 生成install
         find "runtime/files" > "$model/$APPID.install"
         # 生成info.json
         envsubst < info.template.json > "$model/info.json"
         # 生成linglong.yaml
         envsubst < linglong.template.yaml > "$model/linglong.yaml"
-        # 生成package.list
-        grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "./create_rootfs/$DISTRO/$LINGLONG_ARCH.$model.packages.list"
-        # 复制 profile.d目录
-        cp -rP patch_rootfs/* "$model/files/"
-        # 生成 linglong-triplet-list
-        echo "$TRIPLET_LIST" > "$model/files/etc/linglong-triplet-list"
+        # 生成packages.list
+        grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "$model.packages.list"
+        cp $model.packages.list "./create_rootfs/$DISTRO/$LINGLONG_ARCH.$model.packages.list"
+        cp $model.packages.list "$model/files/packages.list"
         # 提交到ostree
         ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$model" $model
         # checkout到layers目录

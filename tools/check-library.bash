@@ -16,7 +16,7 @@ for file in $(cat excludelist | cut -d "#" -f 1);do
     if echo "$suffix" | grep -qE '^[0-9]+$'; then
         file="${file%.*}"
     fi
-    if [ $(find ./ -name "$file*" 2>/dev/null | wc -l) == 0 ]; then
+    if [ $(find ./runtime/files -name "$file*" 2>/dev/null | wc -l) == 0 ]; then
         echo missing "$file"
     fi
 done;
