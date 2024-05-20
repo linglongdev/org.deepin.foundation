@@ -8,6 +8,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+set -e
+
 model="$1"
 arch="$2"
 
@@ -35,12 +37,12 @@ rootfs="$model/files"
 runtimePackages=(
         libxss1
         ca-certificates
-        deepin-desktop-base
+        deepin-keyring
 )
 # 以下列表来自pkg2appimage的excludedeblist
 runtimePackages+=(
         apt # 调试用
-        # apt-transport-https
+        # apt-transport-https # 不需要这个插件了
         # dbus # 已经存在mibase
         # dictionaries-common # 这个在容器中用不到
         fontconfig
@@ -48,10 +50,10 @@ runtimePackages+=(
         # gvfs-backends 这个好像没用，会带一大堆依赖
         # gksu # 仓库没有这个包
         glib-networking
-        # gstreamer1.0-plugins-base
-        # gstreamer1.0-plugins-good
-        # gstreamer1.0-plugins-ugly
-        # gstreamer1.0-pulseaudio
+        # gstreamer1.0-plugins-base # 不需要gstreamer
+        # gstreamer1.0-plugins-good # 不需要gstreamer
+        # gstreamer1.0-plugins-ugly # 不需要gstreamer
+        # gstreamer1.0-pulseaudio # 不需要gstreamer
         # gtk2-engines-pixbuf # # gtk的东西不需要放到base
         # kde-runtime # kde的东西不需要放到base
         libasound2
@@ -78,25 +80,19 @@ runtimePackages+=(
         libpangocairo-1.0-0
         libpangoft2-1.0-0
         libtasn1-6
-        libwayland-egl1-mesa
+        libwayland-dev
         # libxcb1 libxcb 放到单独的列表里
         mime-support
         #udev # 玲珑内部应该不需要设备管理
         uuid-runtime
 )
 
+# appimage的excludelist有这些包的so文件
 runtimePackages+=(
-        libice6 # appimage的excludelist有这个包的so文件
-        libopengl0 # appimage的excludelist有这个包的so文件
+        libice6
+        libopengl0
 )
-# 使用check-dev.bash检查出devel安装了这些包的dev包，为减少构建环境和运行环境差异，runtime也需要安装
-runtimePackages+=(
-        libsm6
-        libxtst6
-        libpcre16-3
-        libpcre32-3
-        libcupsimage2
-)
+
 # libxcb的附加包里面有 include "xcb.h"，所以需要把libxcb所有包都放进去
 runtimePackages+=(
         libxcb1
@@ -126,198 +122,122 @@ runtimePackages+=(
         libxcb-xkb1
 )
 
-
-runtimePackages+=(
-        libarchive13
-        libasan8
-        libasm1
-        libatomic1
-        libbabeltrace1
-        libbinutils
-        libboost-regex1.74.0
-        libcairo-script-interpreter2
-        libcc1-0
-        libctf-nobfd0
-        libctf0
-        libcurl3-gnutls
-        libcurl4
-        libdebuginfod-common
-        libdebuginfod1
-        libdpkg-perl
-        libdw1
-        libegl-mesa0
-        libegl1
-        libevent-2.1-7
-        libgirepository-1.0-1
-        libgles1
-        libgles2
-        libglib2.0-data
-        libgmpxx4ldbl
-        libgnutls-dane0
-        libgnutls-openssl27
-        libgnutlsxx30
-        libgomp1
-        libgprofng0
-        libharfbuzz-cairo0
-        libharfbuzz-gobject0
-        libharfbuzz-icu0
-        libharfbuzz-subset0
-        libhwasan0
-        libipt2
-        libisl23
-        libitm1
-        libjansson4
-        libjsoncpp24
-        libldap-2.5-0
-        liblsan0
-        liblzo2-2
-        libmagic-mgc
-        libmagic1
-        libmpc3
-        libmpfr6
-        libncursesw6
-        libnghttp2-14
-        libpcre2-16-0
-        libpcre2-32-0
-        libpcre2-posix3
-        libpcre3
-        libpcrecpp0v5
-        libpkgconf3
-        libproc2-0
-        libpsl5
-        libpython3-stdlib
-        libpython3.11
-        libpython3.11-minimal
-        libpython3.11-stdlib
-        libquadmath0
-        libreadline8
-        librhash0
-        librsvg2-2
-        librsvg2-common
-        librtmp1
-        libsasl2-2
-        libsasl2-modules-db
-        libsframe1
-        libsource-highlight-common
-        libsource-highlight4v5
-        libssh2-1
-        libtiffxx6
-        libtsan2
-        libubsan1
-        libunbound8
-        libuv1
-        libwebpdecoder3
-        libwebpdemux2
-        libwebpmux3
-)
+# 使用tools/check-lib.bash检查出develop包比runtime包多出的lib，这些应该是cmake gcc等开发包带进来的
+# runtimePackages+=(
+#         libarchive13
+#         libargon2-1
+#         libasan8
+#         libasm1
+#         libatk-bridge2.0-0
+#         libatomic1
+#         libatspi2.0-0
+#         libbabeltrace1
+#         libbinutils
+#         libboost-regex1.83.0
+#         libcairo-gobject2
+#         libcairo-script-interpreter2
+#         libcc1-0
+#         libclang-cpp17
+#         libcolord2
+#         libcryptsetup12
+#         libctf-nobfd0
+#         libctf0
+#         libcupsimage2
+#         libcurl3-gnutls
+#         libcurl4
+#         libdb5.3-stl
+#         libdconf1
+#         libdebuginfod-common
+#         libdebuginfod1
+#         libdevmapper-event1.02.1
+#         libdevmapper1.02.1
+#         libdpkg-perl
+#         libdw1
+#         libegl-mesa0
+#         libegl1
+#         libepoxy0
+#         libevent-2.1-7
+#         libfdisk1
+#         libgles1
+#         libgles2
+#         libglib2.0-data
+#         libgmpxx4ldbl
+#         libgnutls-dane0
+#         libgnutls-openssl27
+#         libgnutlsxx30
+#         libgomp1
+#         libgprofng0
+#         libharfbuzz-cairo0
+#         libharfbuzz-gobject0
+#         libharfbuzz-icu0
+#         libharfbuzz-subset0
+#         libhwasan0
+#         libipt2
+#         libisl23
+#         libitm1
+#         libjansson4
+#         libjson-c5
+#         libjsoncpp25
+#         libkmod2
+#         liblcms2-2
+#         libldap-2.5-0
+#         liblsan0
+#         liblzo2-2
+#         libmagic-mgc
+#         libmagic1
+#         libmpc3
+#         libmpfr6
+#         libncurses6
+#         libncursesw6
+#         libnghttp2-14
+#         libpcre2-16-0
+#         libpcre2-32-0
+#         libpcre2-posix3
+#         libpfm4
+#         libpkgconf3
+#         libproc2-0
+#         libproxy1v5
+#         libpsl5
+#         libpython3-stdlib
+#         libpython3.11
+#         libpython3.11-minimal
+#         libpython3.11-stdlib
+#         libquadmath0
+#         libreadline8
+#         librhash0
+#         librtmp1
+#         libsasl2-2
+#         libsasl2-modules-db
+#         libsframe1
+#         libsm6
+#         libsource-highlight-common
+#         libsource-highlight4v5
+#         libssh2-1
+#         libtiffxx6
+#         libtsan2
+#         libubsan1
+#         libunbound8
+#         libuv1
+#         libwebpdecoder3
+#         libwebpdemux2
+#         libwebpmux3
+#         libxkbcommon0
+#         libxml2-utils
+#         libxtst6
+#         libyaml-0-2
+# )
 
 developPackages=("${runtimePackages[@]}")
 
 developPackages+=(
-elfutils
-file
-apt
-gcc
-g++
-gdb
-cmake
-xz-utils
-libicu-dev # libicu 的开发包
-libxss-dev # libxss 的开发包
-patchelf
-)
-developPackages+=(
-        libice-dev # libice6 的开发包
-        libglvnd-dev # libopengl0 的开发包
-)
-# 通过空链接脚本检查出来的，base中的lib包需要将对应的dev包也安装上
-# 否则应用构建时将dev包安装到非标准路径，dev包里面使用相对引用的软链接会无效
-developPackages+=(
-        libxkbcommon-dev
-        libxrandr-dev
-        librsvg2-dev
-        libmagic-dev
-        libp11-kit-dev
-        libjpeg62-turbo-dev
-        libxxf86vm-dev
-        libxcomposite-dev
-        libfontconfig1-dev
-        libdrm-dev
-        libpango1.0-dev
-        libtasn1-6-dev
-        libatk1.0-dev
-        libcups2-dev
-        libgtk-3-dev
-        libidn2-dev
-        libxdmcp-dev
-        libgmp-dev
-        libpixman-1-dev
-        libwayland-dev
-        libexpat1-dev
-        libasound2-dev
-        libpcre3-dev
-        libxft-dev
-        libcairo2-dev
-        libxcursor-dev
-        libxinerama-dev
-        libfreetype6-dev
-        libglib2.0-dev
-        libxext-dev
-        libgdk-pixbuf2.0-dev
-        libxfixes-dev
-        libgbm-dev
-        libx11-xcb-dev
-        libtiff-dev
-        libxdamage-dev
-        libpng-dev
-        libepoxy-dev
-        libfribidi-dev
-        libgraphite2-dev
-        libjbig-dev
-        libxshmfence-dev
-        libglu1-mesa-dev
-        libssl-dev
-        libharfbuzz-dev
-        libxau-dev
-        libatk-bridge2.0-dev
-        libffi-dev
-        libxi-dev
-        libx11-dev
-        libxrender-dev
-        libatspi2.0-dev
-        nettle-dev
-        libudev-dev
-        libsqlite3-dev
-        libgnutls28-dev
-        libproxy-dev
-)
-
-# libxcb的附加包里面有 include "xcb.h"，所以需要把所有包都放进去
-developPackages+=(
-        libxcb1-dev
-        libxcb-composite0-dev
-        libxcb-damage0-dev
-        libxcb-dpms0-dev
-        libxcb-glx0-dev
-        libxcb-randr0-dev
-        libxcb-record0-dev
-        libxcb-render0-dev
-        libxcb-res0-dev
-        libxcb-screensaver0-dev
-        libxcb-shape0-dev
-        libxcb-shm0-dev
-        libxcb-sync-dev
-        libxcb-xf86dri0-dev
-        libxcb-xfixes0-dev
-        libxcb-xinerama0-dev
-        libxcb-xinput-dev
-        libxcb-xtest0-dev
-        libxcb-xv0-dev
-        libxcb-xvmc0-dev
-        libxcb-dri2-0-dev
-        libxcb-present-dev
-        libxcb-dri3-dev
-        libxcb-xkb-dev
+        elfutils
+        file
+        gcc
+        g++
+        gdb
+        cmake
+        xz-utils
+        patchelf
 )
 
 # 将数组拼接成字符串
@@ -335,13 +255,17 @@ case $model in
         include=$(join_by , "${developPackages[@]}")
         ;;
 esac
+
+workdir=$(dirname "${BASH_SOURCE[0]}")
+export ARCH=$arch
+export MODEL=$model
 mmdebstrap \
+        --customize-hook="chroot $rootfs /bin/bash < $workdir/hook.sh" \
         --hook-dir=/usr/share/mmdebstrap/hooks/merged-usr \
-        --customize-hook="chroot $rootfs /bin/bash < hook.sh" \
         --components="main" \
         --variant=minbase \
         --architectures="$arch" \
         --include="$include" \
         beige \
         "$rootfs" \
-        https://community-packages.deepin.com/deepin/beige
+        https://pools.uniontech.com/deepin-beige

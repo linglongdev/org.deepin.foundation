@@ -8,6 +8,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+set -e
+
 model="$1"
 arch="$2"
 
@@ -27,15 +29,11 @@ case $arch in
     *) echo "unknow arch \"$arch\", supported arch: amd64, arm64, loongarch64" && exit;;
 esac
 
-
-rm -r "$model" || true
-mkdir "$model"
-rootfs="$model/files"
-
+# 手动加的软件包写到这里
 runtimePackages=(
         libxss1
+        dpkg
         ca-certificates
-        deepin-desktop-base
 )
 # 以下列表来自pkg2appimage的excludedeblist
 runtimePackages+=(
@@ -79,24 +77,18 @@ runtimePackages+=(
         libpangoft2-1.0-0
         libtasn1-6
         libwayland-egl1-mesa
-        # libxcb1 libxcb 放到单独的列表里
+        # libxcb1 libxcb相关的包放到单独的列表里
         mime-support
         #udev # 玲珑内部应该不需要设备管理
         uuid-runtime
 )
 
+# appimage的excludelist有这些包的so文件
 runtimePackages+=(
-        libice6 # appimage的excludelist有这个包的so文件
-        libopengl0 # appimage的excludelist有这个包的so文件
+        libice6
+        libopengl0
 )
-# 使用check-dev.bash检查出devel安装了这些包的dev包，为减少构建环境和运行环境差异，runtime也需要安装
-runtimePackages+=(
-        libsm6
-        libxtst6
-        libpcre16-3
-        libpcre32-3
-        libcupsimage2
-)
+
 # libxcb的附加包里面有 include "xcb.h"，所以需要把libxcb所有包都放进去
 runtimePackages+=(
         libxcb1
@@ -126,119 +118,150 @@ runtimePackages+=(
         libxcb-xkb1
 )
 
-# 来自gcc的包
+# 使用tools/check-lib.bash检查出develop包比runtime包多出的lib，这些应该是cmake gcc等开发包带进来的
 runtimePackages+=(
-        libgomp1
-        libatomic1
+libarchive13
+libargon2-1
+libasan5
+libasm1
+libatk-bridge2.0-0
+libatomic1
+libatspi2.0-0
+libbabeltrace1
+libbinutils
+libcairo-gobject2
+libcairo-script-interpreter2
+libcap2
+libcc1-0
+libcolord2
+libcryptsetup12
+libcupsimage2
+libcurl4
+libdb5.3-stl
+libdconf1
+libdevmapper-event1.02.1
+libdevmapper1.02.1
+libdouble-conversion1
+libdpkg-perl
+libdw1
+libepoxy0
+libevdev2
+libevent-2.1-6
+libgdbm-compat4
+libgdbm6
+libgirepository-1.0-1
+libgles1
+libgles2
+libglib2.0-data
+libgmpxx4ldbl
+libgnutls-dane0
+libgnutls-openssl27
+libgnutlsxx28
+libgomp1
+libgudev-1.0-0
+libharfbuzz-gobject0
+libharfbuzz-icu0
+libidn11
+libinput10
+libip4tc0
+libip6tc0
+libipt2
+libiptc0
+libisl19
+libitm1
+libjson-c3
+libjson-glib-1.0-0
+libjson-glib-1.0-common
+libjsoncpp1
+libkmod2
+liblcms2-2
+libldap-2.4-2
+libldap-common
+liblsan0
+liblzo2-2
+libmpc3
+libmpdec2
+libmpfr6
+libmpx2
+libmtdev1
+libncurses6
+libnghttp2-14
+libpcre16-3
+libpcre2-16-0
+libpcre2-32-0
+libpcre2-8-0
+libpcre2-posix0
+libpcre32-3
+libpcrecpp0v5
+libperl5.28
+libpipeline1
+libpopt0
+libprocps7
+libproxy1v5
+libpsl5
+libpython-stdlib
+libpython2-stdlib
+libpython2.7-minimal
+libpython2.7-stdlib
+libpython3-stdlib
+libpython3.7
+libpython3.7-minimal
+libpython3.7-stdlib
+libqt5concurrent5
+libqt5core5a
+libqt5dbus5
+libqt5gui5
+libqt5network5
+libqt5printsupport5
+libqt5sql5
+libqt5test5
+libqt5widgets5
+libqt5xml5
+libquadmath0
+libreadline7
+librhash0
+librtmp1
+libsasl2-2
+libsasl2-modules-db
+libsm6
+libssh2-1
+libtiffxx5
+libtsan0
+libubsan1
+libunbound8
+libuv1
+libvulkan1
+libwacom-common
+libwacom2
+libwayland-cursor0
+libwebpdemux2
+libwebpmux3
+libxcb-icccm4
+libxcb-image0
+libxcb-keysyms1
+libxcb-render-util0
+libxcb-util0
+libxkbcommon-x11-0
+libxkbcommon0
+libxml2-utils
+libxtst6
 )
 
+# 复制runtimePackage
 developPackages=("${runtimePackages[@]}")
 
+# 构建需要的软件包
 developPackages+=(
-elfutils
-file
-apt
-gcc
-g++
-gdb
-cmake
-xz-utils
-libicu-dev # libicu 的开发包
-libxss-dev # libxss 的开发包
-patchelf
-)
-developPackages+=(
-        libice-dev # libice6 的开发包
-        libglvnd-dev # libopengl0 的开发包
-)
-# 通过空链接脚本检查出来的，base中的lib包需要将对应的dev包也安装上
-# 否则应用构建时将dev包安装到非标准路径，dev包里面使用相对引用的软链接会无效
-developPackages+=(
-        libxkbcommon-dev
-        libxrandr-dev
-        librsvg2-dev
-        libmagic-dev
-        libp11-kit-dev
-        libjpeg62-turbo-dev
-        libxxf86vm-dev
-        libxcomposite-dev
-        libfontconfig1-dev
-        libdrm-dev
-        libpango1.0-dev
-        libtasn1-6-dev
-        libatk1.0-dev
-        libcups2-dev
-        libgtk-3-dev
-        libidn2-dev
-        libxdmcp-dev
-        libgmp-dev
-        libpixman-1-dev
-        libwayland-dev
-        libexpat1-dev
-        libasound2-dev
-        libpcre3-dev
-        libxft-dev
-        libcairo2-dev
-        libxcursor-dev
-        libxinerama-dev
-        libfreetype6-dev
-        libglib2.0-dev
-        libxext-dev
-        libgdk-pixbuf2.0-dev
-        libxfixes-dev
-        libgbm-dev
-        libx11-xcb-dev
-        libtiff-dev
-        libxdamage-dev
-        libpng-dev
-        libepoxy-dev
-        libfribidi-dev
-        libgraphite2-dev
-        libjbig-dev
-        libxshmfence-dev
-        libglu1-mesa-dev
-        libssl-dev
-        libharfbuzz-dev
-        libxau-dev
-        libatk-bridge2.0-dev
-        libffi-dev
-        libxi-dev
-        libx11-dev
-        libxrender-dev
-        libatspi2.0-dev
-        nettle-dev
-        libudev-dev
-        libsqlite3-dev
-        libgnutls28-dev
-        libproxy-dev
-)
-
-# libxcb的附加包里面有 include "xcb.h"，所以需要把所有包都放进去
-developPackages+=(
-        libxcb1-dev
-        libxcb-composite0-dev
-        libxcb-damage0-dev
-        libxcb-dpms0-dev
-        libxcb-glx0-dev
-        libxcb-randr0-dev
-        libxcb-record0-dev
-        libxcb-render0-dev
-        libxcb-res0-dev
-        libxcb-screensaver0-dev
-        libxcb-shape0-dev
-        libxcb-shm0-dev
-        libxcb-sync-dev
-        libxcb-xf86dri0-dev
-        libxcb-xfixes0-dev
-        libxcb-xinerama0-dev
-        libxcb-xinput-dev
-        libxcb-xtest0-dev
-        libxcb-xv0-dev
-        libxcb-xvmc0-dev
-        libxcb-dri2-0-dev
-        libxcb-present-dev
-        libxcb-dri3-dev
-        libxcb-xkb-dev
+        dpkg
+        elfutils
+        file
+        apt
+        gcc
+        g++
+        gdb
+        cmake
+        xz-utils
+        patchelf
 )
 
 # 将数组拼接成字符串
@@ -256,12 +279,20 @@ case $model in
         include=$(join_by , "${developPackages[@]}")
         ;;
 esac
+
+workdir=$(dirname "${BASH_SOURCE[0]}")
+
 mmdebstrap \
-        --customize-hook="chroot $rootfs /bin/bash < hook.sh" \
-        --components="main non-free" \
+        --customize-hook="ARCH=$arch MODEL=$model chroot \$1 /bin/bash < $workdir/hook.sh" \
+        --customize-hook="ARCH=$arch MODEL=$model chroot \$1 /bin/bash < hook.sh" \
         --variant=minbase \
         --architectures="$arch" \
         --include="$include" \
-        eagle \
-        "$rootfs" \
-        http://pools.uniontech.com/desktop-professional
+        "" "$model.tar" - < "$workdir/sources.list"
+
+rm -r "$model"
+mkdir -p "$model/files"
+# 不知为何，解压会报错但不影响使用
+tar -xvf "$model.tar" -C "$model/files" || true
+cp "$workdir/ldconfig/ldconfig_$arch" "$model/files/sbin/"
+rm "$model.tar"
