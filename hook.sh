@@ -5,6 +5,7 @@ set -e
 # 生成缺少的available文件，使apt/dpkg能正常工作
 echo "" > /var/lib/dpkg/available
 apt-get -y update
+# 安装develop包中的lib包，避免产生差异
 
 # 提取deepin-desktop-base包里面的lsb-release和os-version文件
 pwd=$PWD
@@ -18,11 +19,12 @@ cd "$pwd"
 # 玲珑中不需要使用mount
 apt-get -y --allow-remove-essential remove mount --purge
 # 删除runtime的文档内容
-if [[ "$MODEL" == "runtime" ]]; then
+if [[ "$MODULE" == "runtime" ]]; then
     rm -rf "/usr/share/doc/" "/usr/share/man/" "/usr/share/icons/" "/usr/share/locale/"
 fi
-# 安装lib的dev包
-if [[ "$MODEL" == "develop" ]]; then
+
+# 安装lib的dev包，在develop中所有的lib库都应该带上dev包
+function installDevPkg {
     # 遍历所有以lib开头不以-dev结尾的包
     dpkg-query -W -f='${binary:Package}\n' | awk -F':' '{print $1}' | grep '^lib' | grep -v '\-dev$' | while IFS= read -r pkg; do
         # 获取包的源码包
@@ -44,11 +46,16 @@ if [[ "$MODEL" == "develop" ]]; then
         done
     done
 
-    cat /tmp/dev.packages.list | awk '{print $1}' | xargs apt-get install -y
-fi
+    awk '{print $1}' /tmp/dev.packages.list | xargs apt-get install -y
+    rm /tmp/dev.packages.list
+}
 
+# 执行两次installDevPkg，安装dev包可能会引入新的lib包
+if [[ "$MODULE" == "develop" ]]; then
+    installDevPkg
+    installDevPkg
+fi
 # 清理apt残留
-apt-get -y autoremove --purge
 apt-get clean
 
 # apt生成的配置文件权限是444，会在构建玲珑时因无法复制出错

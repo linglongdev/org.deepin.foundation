@@ -10,14 +10,14 @@
 
 set -e
 
-model="$1"
+module="$1"
 arch="$2"
 
-case $model in
+case $module in
     runtime);;
     develop);;
-    "") echo "enter an model, like ./create_rootfs.sh runtime amd64" && exit;;
-    *) echo "unknow model \"$model\", supported model: runtime, develop" && exit;;
+    "") echo "enter an module, like ./create_rootfs.sh runtime amd64" && exit;;
+    *) echo "unknow module \"$module\", supported module: runtime, develop" && exit;;
 esac
 
 
@@ -118,135 +118,6 @@ runtimePackages+=(
         libxcb-xkb1
 )
 
-# 使用tools/check-lib.bash检查出develop包比runtime包多出的lib，这些应该是cmake gcc等开发包带进来的
-runtimePackages+=(
-libarchive13
-libargon2-1
-libasan5
-libasm1
-libatk-bridge2.0-0
-libatomic1
-libatspi2.0-0
-libbabeltrace1
-libbinutils
-libcairo-gobject2
-libcairo-script-interpreter2
-libcap2
-libcc1-0
-libcolord2
-libcryptsetup12
-libcupsimage2
-libcurl4
-libdb5.3-stl
-libdconf1
-libdevmapper-event1.02.1
-libdevmapper1.02.1
-libdouble-conversion1
-libdpkg-perl
-libdw1
-libepoxy0
-libevdev2
-libevent-2.1-6
-libgdbm-compat4
-libgdbm6
-libgirepository-1.0-1
-libgles1
-libgles2
-libglib2.0-data
-libgmpxx4ldbl
-libgnutls-dane0
-libgnutls-openssl27
-libgnutlsxx28
-libgomp1
-libgudev-1.0-0
-libharfbuzz-gobject0
-libharfbuzz-icu0
-libidn11
-libinput10
-libip4tc0
-libip6tc0
-libipt2
-libiptc0
-libisl19
-libitm1
-libjson-c3
-libjson-glib-1.0-0
-libjson-glib-1.0-common
-libjsoncpp1
-libkmod2
-liblcms2-2
-libldap-2.4-2
-libldap-common
-liblsan0
-liblzo2-2
-libmpc3
-libmpdec2
-libmpfr6
-libmpx2
-libmtdev1
-libncurses6
-libnghttp2-14
-libpcre16-3
-libpcre2-16-0
-libpcre2-32-0
-libpcre2-8-0
-libpcre2-posix0
-libpcre32-3
-libpcrecpp0v5
-libperl5.28
-libpipeline1
-libpopt0
-libprocps7
-libproxy1v5
-libpsl5
-libpython-stdlib
-libpython2-stdlib
-libpython2.7-minimal
-libpython2.7-stdlib
-libpython3-stdlib
-libpython3.7
-libpython3.7-minimal
-libpython3.7-stdlib
-libqt5concurrent5
-libqt5core5a
-libqt5dbus5
-libqt5gui5
-libqt5network5
-libqt5printsupport5
-libqt5sql5
-libqt5test5
-libqt5widgets5
-libqt5xml5
-libquadmath0
-libreadline7
-librhash0
-librtmp1
-libsasl2-2
-libsasl2-modules-db
-libsm6
-libssh2-1
-libtiffxx5
-libtsan0
-libubsan1
-libunbound8
-libuv1
-libvulkan1
-libwacom-common
-libwacom2
-libwayland-cursor0
-libwebpdemux2
-libwebpmux3
-libxcb-icccm4
-libxcb-image0
-libxcb-keysyms1
-libxcb-render-util0
-libxcb-util0
-libxkbcommon-x11-0
-libxkbcommon0
-libxml2-utils
-libxtst6
-)
-
 # 复制runtimePackage
 developPackages=("${runtimePackages[@]}")
 
@@ -270,8 +141,15 @@ function join_by {
   if shift 2; then printf %s "$f" "${@/#/$d}"; fi
 }
 
+workdir=$(dirname "${BASH_SOURCE[0]}")
+
+# 将develop中的lib库添加到runtime，减少两者的差异，避免在develop构建好应用后，无法在runtime运行的问题
+while IFS= read -r line; do
+    runtimePackages+=("$line")
+done < <(grep "^lib" develop.packages.list | grep -v dev$ | grep -v bin$)
+
 include=""
-case $model in
+case $module in
     runtime)
         include=$(join_by , "${runtimePackages[@]}")
         ;;
@@ -280,19 +158,20 @@ case $model in
         ;;
 esac
 
-workdir=$(dirname "${BASH_SOURCE[0]}")
+# shellcheck disable=SC2001
+echo "$include"|sed 's|,|\n|g' > "$module.include.list"
 
 mmdebstrap \
-        --customize-hook="ARCH=$arch MODEL=$model chroot \$1 /bin/bash < $workdir/hook.sh" \
-        --customize-hook="ARCH=$arch MODEL=$model chroot \$1 /bin/bash < hook.sh" \
+        --customize-hook="ARCH=$arch MODULE=$module chroot \$1 /bin/bash < $workdir/hook.sh" \
+        --customize-hook="ARCH=$arch MODULE=$module chroot \$1 /bin/bash < hook.sh" \
         --variant=minbase \
         --architectures="$arch" \
         --include="$include" \
-        "" "$model.tar" - < "$workdir/sources.list"
+        "" "$module.tar" - < "$workdir/sources.list"
 
-rm -r "$model"
-mkdir -p "$model/files"
-# 不知为何，解压会报错但不影响使用
-tar -xvf "$model.tar" -C "$model/files" || true
-cp "$workdir/ldconfig/ldconfig_$arch" "$model/files/sbin/"
-rm "$model.tar"
+# 将tar包解压成目录
+rm -rf "$module" || true
+mkdir -p "$module/files"
+tar -xvf "$module.tar" -C "$module/files" || true # 不知为何，解压到最后会报错但不影响使用
+cp "$workdir/ldconfig/ldconfig_$arch" "$module/files/sbin/"
+rm "$module.tar"

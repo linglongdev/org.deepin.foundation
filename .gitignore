@@ -4,11 +4,9 @@ org.deepin.foundation.install
 excludedeblist
 excludelist
 rootfs
-pkg.list
-so.list
 linglong
 runtime
 develop
 linglong.yaml
-develop.packages.list
-runtime.packages.list
+*.list
+*.tar

@@ -56,35 +56,34 @@ source "./create_rootfs/$DISTRO/version.sh"
 export CHANNEL="main"
 export LINGLONG_ARCH
 
-# 生成rootfs
-tmux new-session -d -s "create rootfs"
-tmux send-keys "./create_rootfs/$DISTRO/create_rootfs.sh develop $ARCH && echo create develop rootfs success && exit" Enter
-tmux split-window -v -t "create rootfs"
-tmux send-keys "./create_rootfs/$DISTRO/create_rootfs.sh runtime $ARCH && echo create runtime rootfs success && exit" Enter
-tmux attach-session
-
-for model in runtime develop; do
-        echo $model
+for module in develop runtime; do
+        echo $module
+        # 生成rootfs
+        "./create_rootfs/$DISTRO/create_rootfs.sh" $module "$ARCH"
         # 复制patch_rootfs目录
-        cp -rP patch_rootfs/* "$model/files/"
+        cp -rP patch_rootfs/* "$module/files/"
         # 生成 linglong-triplet-list
-        echo "$TRIPLET_LIST" > "$model/files/etc/linglong-triplet-list"
+        echo "$TRIPLET_LIST" > "$module/files/etc/linglong-triplet-list"
         # 生成install
-        find "runtime/files" > "$model/$APPID.install"
+        find "runtime/files" > "$module/$APPID.install"
         # 生成info.json
-        envsubst < info.template.json > "$model/info.json"
+        MODULE=$module envsubst < info.template.json > "$module/info.json"
         # 生成linglong.yaml
-        envsubst < linglong.template.yaml > "$model/linglong.yaml"
-        # 生成packages.list
-        grep "^Package:" "$model/files/var/lib/dpkg/status" | awk '{print $2}' > "$model.packages.list"
-        cp $model.packages.list "./create_rootfs/$DISTRO/$LINGLONG_ARCH.$model.packages.list"
-        cp $model.packages.list "$model/files/packages.list"
+        envsubst < linglong.template.yaml > "$module/linglong.yaml"
+        # 生成packages.list，并复制到多个位置
+        grep "^Package:" "$module/files/var/lib/dpkg/status" | awk '{print $2}' > "$module.packages.list"
+        cp $module.packages.list "./create_rootfs/$DISTRO/$LINGLONG_ARCH.$module.packages.list"
+        cp $module.packages.list "$module/files/packages.list"
+        # 借用packages.list生成一个hook脚本，用于在runtime包中安装develop包里面的lib库，避免develop和runtime差异较大
+        if [[ "$MODEL" == "develop" ]]; then
+            cat $module.packages.list|grep "^lib"|grep -v dev$|grep -v bin$|xargs echo apt install > install_develop_libpkg.hook.sh
+        fi
         # 提交到ostree
-        ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$model" $model
+        ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$module" $module
         # checkout到layers目录
-        rm -rf "$HOME/.cache/linglong-builder/layers/main/$APPID/$VERSION/$LINGLONG_ARCH/$model" || true
+        rm -rf "$HOME/.cache/linglong-builder/layers/main/$APPID/$VERSION/$LINGLONG_ARCH/$module" || true
         mkdir -p "$HOME/.cache/linglong-builder/layers/main/$APPID/$VERSION/$LINGLONG_ARCH" || true
-        ostree --repo="$HOME/.cache/linglong-builder/repo" checkout "$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$model" "$HOME/.cache/linglong-builder/layers/main/$APPID/$VERSION/$LINGLONG_ARCH/$model"
+        ostree --repo="$HOME/.cache/linglong-builder/repo" checkout "$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$module" "$HOME/.cache/linglong-builder/layers/main/$APPID/$VERSION/$LINGLONG_ARCH/$module"
 done
 
 envsubst < linglong.template.yaml > "linglong.yaml"

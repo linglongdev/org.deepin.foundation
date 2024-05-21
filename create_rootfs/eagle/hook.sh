@@ -17,3 +17,4 @@ cd "$pwd"
 
 # mibase有个多余的uos-license-upgrade，将它和依赖卸载
 apt-get -y remove uos-license-upgrade --purge || true
+apt-get -y autoremove --purge
