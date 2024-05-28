@@ -141,7 +141,6 @@ function join_by {
   if shift 2; then printf %s "$f" "${@/#/$d}"; fi
 }
 
-workdir=$(dirname "${BASH_SOURCE[0]}")
 
 # 将develop中的lib库添加到runtime，减少两者的差异，避免在develop构建好应用后，无法在runtime运行的问题
 while IFS= read -r line; do
@@ -161,6 +160,8 @@ esac
 # shellcheck disable=SC2001
 echo "$include"|sed 's|,|\n|g' > "$module.include.list"
 
+
+workdir=$(dirname "${BASH_SOURCE[0]}")
 mmdebstrap \
         --customize-hook="ARCH=$arch MODULE=$module chroot \$1 /bin/bash < $workdir/hook.sh" \
         --customize-hook="ARCH=$arch MODULE=$module chroot \$1 /bin/bash < hook.sh" \

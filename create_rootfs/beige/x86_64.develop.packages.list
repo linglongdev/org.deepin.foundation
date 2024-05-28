@@ -54,6 +54,8 @@ gir1.2-glib-2.0
 gir1.2-gtk-2.0
 gir1.2-harfbuzz-0.0
 gir1.2-pango-1.0
+glib-networking-common
+glib-networking-services
 gpgv
 grep
 gtk-update-icon-cache
@@ -412,6 +414,7 @@ libssl3
 libstdc++-13-dev
 libstdc++6
 libsystemd-dev
+libsystemd-shared
 libsystemd0
 libtasn1-6
 libtasn1-6-dev
@@ -594,6 +597,7 @@ sed
 sensible-utils
 sgml-base
 shared-mime-info
+systemd-dev
 sysvinit-utils
 tar
 tzdata
@@ -604,6 +608,7 @@ uuid-dev
 uuid-runtime
 x11-common
 x11proto-dev
+x11proto-xext-dev
 xkb-data
 xml-core
 xorg-sgml-doctools

@@ -14,3 +14,7 @@ dpkg-deb -R ./*.deb ./
 cp etc/lsb-release /etc/
 cp etc/os-version /etc/
 cd "$pwd"
+
+# 删除 /etc/localtime，由外部挂载不能是链接
+rm /etc/localtime
+touch /etc/localtime

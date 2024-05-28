@@ -18,3 +18,6 @@ cd "$pwd"
 # mibase有个多余的uos-license-upgrade，将它和依赖卸载
 apt-get -y remove uos-license-upgrade --purge || true
 apt-get -y autoremove --purge
+
+# apt生成的配置文件权限是444，会在构建玲珑时因无法复制出错
+chmod 644 /etc/apt/apt.conf.d/01autoremove-kernels

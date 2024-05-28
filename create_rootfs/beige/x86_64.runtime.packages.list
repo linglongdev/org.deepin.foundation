@@ -28,6 +28,8 @@ fontconfig
 fontconfig-config
 fonts-dejavu-core
 gcc-13-base
+glib-networking-common
+glib-networking-services
 gpgv
 grep
 gtk-update-icon-cache
@@ -108,6 +110,10 @@ libegl1
 libelf1
 libepoxy0
 libevent-2.1-7
+libevent-core-2.1-7
+libevent-extra-2.1-7
+libevent-openssl-2.1-7
+libevent-pthreads-2.1-7
 libexpat1
 libext2fs2
 libfdisk1
@@ -247,6 +253,7 @@ libss2
 libssh2-1
 libssl3
 libstdc++6
+libsystemd-shared
 libsystemd0
 libtasn1-6
 libtext-charwidth-perl
@@ -348,6 +355,7 @@ rpcsvc-proto
 sed
 sensible-utils
 shared-mime-info
+systemd-dev
 sysvinit-utils
 tar
 tzdata
