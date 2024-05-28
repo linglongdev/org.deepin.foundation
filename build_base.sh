@@ -69,15 +69,12 @@ for module in develop runtime; do
         # 生成info.json
         MODULE=$module envsubst < info.template.json > "$module/info.json"
         # 生成linglong.yaml
-        envsubst < linglong.template.yaml > "$module/linglong.yaml"
+        envsubst < linglong.template.yaml > "linglong.yaml"
         # 生成packages.list，并复制到多个位置
         grep "^Package:" "$module/files/var/lib/dpkg/status" | awk '{print $2}' > "$module.packages.list"
         cp $module.packages.list "./create_rootfs/$DISTRO/$LINGLONG_ARCH.$module.packages.list"
         cp $module.packages.list "$module/files/packages.list"
-        # 借用packages.list生成一个hook脚本，用于在runtime包中安装develop包里面的lib库，避免develop和runtime差异较大
-        if [[ "$MODEL" == "develop" ]]; then
-            cat $module.packages.list|grep "^lib"|grep -v dev$|grep -v bin$|xargs echo apt install > install_develop_libpkg.hook.sh
-        fi
+
         # 提交到ostree
         ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$module" $module
         # checkout到layers目录

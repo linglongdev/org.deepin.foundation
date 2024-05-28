@@ -5,17 +5,7 @@ set -e
 # 生成缺少的available文件，使apt/dpkg能正常工作
 echo "" > /var/lib/dpkg/available
 apt-get -y update
-# 安装develop包中的lib包，避免产生差异
 
-# 提取deepin-desktop-base包里面的lsb-release和os-version文件
-pwd=$PWD
-cd $(mktemp -d)
-apt-get download deepin-desktop-base
-dpkg-deb -R ./*.deb ./
-cd usr/share/deepin-desktop-base
-cp lsb-release /etc/
-cp os-version /etc/
-cd "$pwd"
 # 玲珑中不需要使用mount
 apt-get -y --allow-remove-essential remove mount --purge
 # 删除runtime的文档内容
@@ -58,7 +48,5 @@ fi
 # 清理apt残留
 apt-get clean
 
-# apt生成的配置文件权限是444，会在构建玲珑时因无法复制出错
-chmod 644 /etc/apt/apt.conf.d/01autoremove-kernels
 # ldconfig 需要
 touch /etc/ld.so.cache~ /etc/ld.so.conf.d/zz_deepin-linglong-app.conf

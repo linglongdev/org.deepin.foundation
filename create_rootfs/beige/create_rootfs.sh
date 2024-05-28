@@ -10,14 +10,14 @@
 
 set -e
 
-model="$1"
+module="$1"
 arch="$2"
 
-case $model in
+case $module in
     runtime);;
     develop);;
-    "") echo "enter an model, like ./create_rootfs.sh runtime amd64" && exit;;
-    *) echo "unknow model \"$model\", supported model: runtime, develop" && exit;;
+    "") echo "enter an module, like ./create_rootfs.sh runtime amd64" && exit;;
+    *) echo "unknow module \"$module\", supported module: runtime, develop" && exit;;
 esac
 
 
@@ -29,13 +29,9 @@ case $arch in
     *) echo "unknow arch \"$arch\", supported arch: amd64, arm64, loongarch64" && exit;;
 esac
 
-
-rm -r "$model" || true
-mkdir "$model"
-rootfs="$model/files"
-
 runtimePackages=(
         libxss1
+        libicu74
         ca-certificates
         deepin-keyring
 )
@@ -122,111 +118,6 @@ runtimePackages+=(
         libxcb-xkb1
 )
 
-# 使用tools/check-lib.bash检查出develop包比runtime包多出的lib，这些应该是cmake gcc等开发包带进来的
-# runtimePackages+=(
-#         libarchive13
-#         libargon2-1
-#         libasan8
-#         libasm1
-#         libatk-bridge2.0-0
-#         libatomic1
-#         libatspi2.0-0
-#         libbabeltrace1
-#         libbinutils
-#         libboost-regex1.83.0
-#         libcairo-gobject2
-#         libcairo-script-interpreter2
-#         libcc1-0
-#         libclang-cpp17
-#         libcolord2
-#         libcryptsetup12
-#         libctf-nobfd0
-#         libctf0
-#         libcupsimage2
-#         libcurl3-gnutls
-#         libcurl4
-#         libdb5.3-stl
-#         libdconf1
-#         libdebuginfod-common
-#         libdebuginfod1
-#         libdevmapper-event1.02.1
-#         libdevmapper1.02.1
-#         libdpkg-perl
-#         libdw1
-#         libegl-mesa0
-#         libegl1
-#         libepoxy0
-#         libevent-2.1-7
-#         libfdisk1
-#         libgles1
-#         libgles2
-#         libglib2.0-data
-#         libgmpxx4ldbl
-#         libgnutls-dane0
-#         libgnutls-openssl27
-#         libgnutlsxx30
-#         libgomp1
-#         libgprofng0
-#         libharfbuzz-cairo0
-#         libharfbuzz-gobject0
-#         libharfbuzz-icu0
-#         libharfbuzz-subset0
-#         libhwasan0
-#         libipt2
-#         libisl23
-#         libitm1
-#         libjansson4
-#         libjson-c5
-#         libjsoncpp25
-#         libkmod2
-#         liblcms2-2
-#         libldap-2.5-0
-#         liblsan0
-#         liblzo2-2
-#         libmagic-mgc
-#         libmagic1
-#         libmpc3
-#         libmpfr6
-#         libncurses6
-#         libncursesw6
-#         libnghttp2-14
-#         libpcre2-16-0
-#         libpcre2-32-0
-#         libpcre2-posix3
-#         libpfm4
-#         libpkgconf3
-#         libproc2-0
-#         libproxy1v5
-#         libpsl5
-#         libpython3-stdlib
-#         libpython3.11
-#         libpython3.11-minimal
-#         libpython3.11-stdlib
-#         libquadmath0
-#         libreadline8
-#         librhash0
-#         librtmp1
-#         libsasl2-2
-#         libsasl2-modules-db
-#         libsframe1
-#         libsm6
-#         libsource-highlight-common
-#         libsource-highlight4v5
-#         libssh2-1
-#         libtiffxx6
-#         libtsan2
-#         libubsan1
-#         libunbound8
-#         libuv1
-#         libwebpdecoder3
-#         libwebpdemux2
-#         libwebpmux3
-#         libxkbcommon0
-#         libxml2-utils
-#         libxtst6
-#         libyaml-0-2
-# )
-
 developPackages=("${runtimePackages[@]}")
 
 developPackages+=(
@@ -240,6 +131,11 @@ developPackages+=(
         patchelf
 )
 
+# 将develop中的lib库添加到runtime，减少两者的差异，避免在develop构建好应用后，无法在runtime运行的问题
+while IFS= read -r line; do
+    runtimePackages+=("$line")
+done < <(grep "^lib" develop.packages.list | grep -v dev$ | grep -v bin$)
+
 # 将数组拼接成字符串
 function join_by {
   local d=${1-} f=${2-}
@@ -247,7 +143,7 @@ function join_by {
 }
 
 include=""
-case $model in
+case $module in
     runtime)
         include=$(join_by , "${runtimePackages[@]}")
         ;;
@@ -256,16 +152,26 @@ case $model in
         ;;
 esac
 
+# shellcheck disable=SC2001
+echo "$include"|sed 's|,|\n|g' > "$module.include.list"
+
+
 workdir=$(dirname "${BASH_SOURCE[0]}")
-export ARCH=$arch
-export MODEL=$model
+
 mmdebstrap \
-        --customize-hook="chroot $rootfs /bin/bash < $workdir/hook.sh" \
+        --customize-hook="ARCH=$arch MODULE=$module chroot \$1 /bin/bash < $workdir/hook.sh" \
+        --customize-hook="ARCH=$arch MODULE=$module chroot \$1 /bin/bash < hook.sh" \
         --hook-dir=/usr/share/mmdebstrap/hooks/merged-usr \
         --components="main" \
         --variant=minbase \
         --architectures="$arch" \
         --include="$include" \
         beige \
-        "$rootfs" \
+        "$module.tar" \
         https://pools.uniontech.com/deepin-beige
+
+# 将tar包解压成目录
+rm -rf "$module" || true
+mkdir -p "$module/files"
+tar -xvf "$module.tar" -C "$module/files" || true # 不知为何，解压到最后会报错但不影响使用
+rm "$module.tar"
