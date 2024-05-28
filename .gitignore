@@ -8,5 +8,5 @@ linglong
 runtime
 develop
 linglong.yaml
-*.list
-*.tar
+/*.list
+/*.tar

@@ -1,6 +1,7 @@
 adduser
 adwaita-icon-theme
 apt
+apt-transport-https
 base-files
 base-passwd
 bash
