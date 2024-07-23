@@ -36,6 +36,8 @@ export PKG_CONFIG_PATH="${PKG_CONFIG_PATH%:}"
 export XDG_DATA_DIRS="${XDG_DATA_DIRS%:}"
 export XDG_CONFIG_DIRS="${XDG_CONFIG_DIRS%:}"
 
+export SUDO_FORCE_REMOVE=yes
+
 # apply runtime profile
 if [ -e "/runtime/etc/profile" ]; then
     . /runtime/etc/profile

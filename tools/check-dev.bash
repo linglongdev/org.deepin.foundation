@@ -5,26 +5,21 @@
 
 temp_file=$(mktemp)
 # 统计devel包文件列表
-find rootfs \
-        -not -path "$rootfs/usr/share/doc/*" \
-        -not -path "$rootfs/usr/share/man/*" \
-        -not -path "$rootfs/usr/share/icons/*" \
-        -printf "/runtime/%P\n" > "$temp_file"
+find develop -printf "/runtime/%P\n" > "$temp_file"
 
 rm so.list || true
 # 匹配devel比runtime包多出的so文件
-diff org.deepin.foundation.install $temp_file |
+diff runtime/org.deepin.foundation.install $temp_file |
  grep -E "^>.+\.so[0-9\.]*$" | # 匹配so文件
  awk '{print $2}' | # 去掉diff开头的>符号
- sed "s/rootfs//" > so.list # 将so文件列表输出到rootfs目录
+ sed "s#/runtime/files##" > so.list # 将so文件列表输出到rootfs目录
 
 # 查找多出的so文件来自哪些包
 rm pkg.list || true
 while IFS= read -r sofile
 do
-    sofile=$(echo "$sofile" | sed "s#^/runtime##")
-    for listfile in $(grep "^$sofile$" rootfs/var/lib/dpkg/info/*.list); do
-        pkg=$(echo "$listfile" | awk -F "[:/]" '{print $6}')
+    for listfile in $(grep "^$sofile$" develop/files/var/lib/dpkg/info/*.list); do
+        pkg=$(echo "$listfile" | awk -F "[:/]" '{print $7}')
         pkg=${pkg%".list"}
         echo "$pkg" >> pkg.list
     done
@@ -37,7 +32,7 @@ do
         # 去掉包名可能携带的版本号
         pkgPrefix=$(echo "$pkg" | grep -Eo "^[a-z-]*")
         # header一般存放在dev包中，所以要检查dev包是否被安装了
-        if grep "$pkgPrefix" devel.packages.list | grep -q dev$; then
+        if grep "$pkgPrefix" develop.packages.list | grep -q dev$; then
             echo "$pkg has devel package, Not installed in runtime"
         fi
     fi

@@ -5,7 +5,7 @@
 wget -c -N https://raw.githubusercontent.com/AppImageCommunity/pkg2appimage/master/excludedeblist
 
 for pkg in $(cat excludedeblist | cut -d "#" -f 1);do
-    if ! grep -q "^Package: $pkg" rootfs/var/lib/dpkg/status; then
+    if ! grep -q "^Package: $pkg" runtime/files/var/lib/dpkg/status; then
         echo "missing $pkg"
     fi
 done;

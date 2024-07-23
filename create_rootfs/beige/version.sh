@@ -1,3 +1,3 @@
 #!/bin/sh
 export APPID=org.deepin.foundation
-export VERSION="23.0.0.26"
+export VERSION="2405.0.0.0"

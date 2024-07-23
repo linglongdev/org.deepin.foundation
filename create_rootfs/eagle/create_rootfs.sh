@@ -8,14 +8,16 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-model="$1"
+set -e
+
+module="$1"
 arch="$2"
 
-case $model in
+case $module in
     runtime);;
     develop);;
-    "") echo "enter an model, like ./create_rootfs.sh runtime amd64" && exit;;
-    *) echo "unknow model \"$model\", supported model: runtime, develop" && exit;;
+    "") echo "enter an module, like ./create_rootfs.sh runtime amd64" && exit;;
+    *) echo "unknow module \"$module\", supported module: runtime, develop" && exit;;
 esac
 
 
@@ -27,15 +29,11 @@ case $arch in
     *) echo "unknow arch \"$arch\", supported arch: amd64, arm64, loongarch64" && exit;;
 esac
 
-
-rm -r "$model" || true
-mkdir "$model"
-rootfs="$model/files"
-
+# 手动加的软件包写到这里
 runtimePackages=(
         libxss1
+        dpkg
         ca-certificates
-        deepin-desktop-base
 )
 # 以下列表来自pkg2appimage的excludedeblist
 runtimePackages+=(
@@ -79,24 +77,18 @@ runtimePackages+=(
         libpangoft2-1.0-0
         libtasn1-6
         libwayland-egl1-mesa
-        # libxcb1 libxcb 放到单独的列表里
+        # libxcb1 libxcb相关的包放到单独的列表里
         mime-support
         #udev # 玲珑内部应该不需要设备管理
         uuid-runtime
 )
 
+# appimage的excludelist有这些包的so文件
 runtimePackages+=(
-        libice6 # appimage的excludelist有这个包的so文件
-        libopengl0 # appimage的excludelist有这个包的so文件
+        libice6
+        libopengl0
 )
-# 使用check-dev.bash检查出devel安装了这些包的dev包，为减少构建环境和运行环境差异，runtime也需要安装
-runtimePackages+=(
-        libsm6
-        libxtst6
-        libpcre16-3
-        libpcre32-3
-        libcupsimage2
-)
+
 # libxcb的附加包里面有 include "xcb.h"，所以需要把libxcb所有包都放进去
 runtimePackages+=(
         libxcb1
@@ -126,119 +118,21 @@ runtimePackages+=(
         libxcb-xkb1
 )
 
-# 来自gcc的包
-runtimePackages+=(
-        libgomp1
-        libatomic1
-)
-
+# 复制runtimePackage
 developPackages=("${runtimePackages[@]}")
 
+# 构建需要的软件包
 developPackages+=(
-elfutils
-file
-apt
-gcc
-g++
-gdb
-cmake
-xz-utils
-libicu-dev # libicu 的开发包
-libxss-dev # libxss 的开发包
-patchelf
-)
-developPackages+=(
-        libice-dev # libice6 的开发包
-        libglvnd-dev # libopengl0 的开发包
-)
-# 通过空链接脚本检查出来的，base中的lib包需要将对应的dev包也安装上
-# 否则应用构建时将dev包安装到非标准路径，dev包里面使用相对引用的软链接会无效
-developPackages+=(
-        libxkbcommon-dev
-        libxrandr-dev
-        librsvg2-dev
-        libmagic-dev
-        libp11-kit-dev
-        libjpeg62-turbo-dev
-        libxxf86vm-dev
-        libxcomposite-dev
-        libfontconfig1-dev
-        libdrm-dev
-        libpango1.0-dev
-        libtasn1-6-dev
-        libatk1.0-dev
-        libcups2-dev
-        libgtk-3-dev
-        libidn2-dev
-        libxdmcp-dev
-        libgmp-dev
-        libpixman-1-dev
-        libwayland-dev
-        libexpat1-dev
-        libasound2-dev
-        libpcre3-dev
-        libxft-dev
-        libcairo2-dev
-        libxcursor-dev
-        libxinerama-dev
-        libfreetype6-dev
-        libglib2.0-dev
-        libxext-dev
-        libgdk-pixbuf2.0-dev
-        libxfixes-dev
-        libgbm-dev
-        libx11-xcb-dev
-        libtiff-dev
-        libxdamage-dev
-        libpng-dev
-        libepoxy-dev
-        libfribidi-dev
-        libgraphite2-dev
-        libjbig-dev
-        libxshmfence-dev
-        libglu1-mesa-dev
-        libssl-dev
-        libharfbuzz-dev
-        libxau-dev
-        libatk-bridge2.0-dev
-        libffi-dev
-        libxi-dev
-        libx11-dev
-        libxrender-dev
-        libatspi2.0-dev
-        nettle-dev
-        libudev-dev
-        libsqlite3-dev
-        libgnutls28-dev
-        libproxy-dev
-)
-
-# libxcb的附加包里面有 include "xcb.h"，所以需要把所有包都放进去
-developPackages+=(
-        libxcb1-dev
-        libxcb-composite0-dev
-        libxcb-damage0-dev
-        libxcb-dpms0-dev
-        libxcb-glx0-dev
-        libxcb-randr0-dev
-        libxcb-record0-dev
-        libxcb-render0-dev
-        libxcb-res0-dev
-        libxcb-screensaver0-dev
-        libxcb-shape0-dev
-        libxcb-shm0-dev
-        libxcb-sync-dev
-        libxcb-xf86dri0-dev
-        libxcb-xfixes0-dev
-        libxcb-xinerama0-dev
-        libxcb-xinput-dev
-        libxcb-xtest0-dev
-        libxcb-xv0-dev
-        libxcb-xvmc0-dev
-        libxcb-dri2-0-dev
-        libxcb-present-dev
-        libxcb-dri3-dev
-        libxcb-xkb-dev
+        dpkg
+        elfutils
+        file
+        apt
+        gcc
+        g++
+        gdb
+        cmake
+        xz-utils
+        patchelf
 )
 
 # 将数组拼接成字符串
@@ -247,8 +141,14 @@ function join_by {
   if shift 2; then printf %s "$f" "${@/#/$d}"; fi
 }
 
+
+# 将develop中的lib库添加到runtime，减少两者的差异，避免在develop构建好应用后，无法在runtime运行的问题
+while IFS= read -r line; do
+    runtimePackages+=("$line")
+done < <(grep "^lib" develop.packages.list | grep -v dev$ | grep -v bin$)
+
 include=""
-case $model in
+case $module in
     runtime)
         include=$(join_by , "${runtimePackages[@]}")
         ;;
@@ -256,12 +156,23 @@ case $model in
         include=$(join_by , "${developPackages[@]}")
         ;;
 esac
+
+# shellcheck disable=SC2001
+echo "$include"|sed 's|,|\n|g' > "$module.include.list"
+
+
+workdir=$(dirname "${BASH_SOURCE[0]}")
 mmdebstrap \
-        --customize-hook="chroot $rootfs /bin/bash < hook.sh" \
-        --components="main non-free" \
+        --customize-hook="ARCH=$arch MODULE=$module chroot \$1 /bin/bash < $workdir/hook.sh" \
+        --customize-hook="ARCH=$arch MODULE=$module chroot \$1 /bin/bash < hook.sh" \
         --variant=minbase \
         --architectures="$arch" \
         --include="$include" \
-        eagle \
-        "$rootfs" \
-        http://pools.uniontech.com/desktop-professional
+        "" "$module.tar" - < "$workdir/sources.list"
+
+# 将tar包解压成目录
+rm -rf "$module" || true
+mkdir -p "$module/files"
+tar -xvf "$module.tar" -C "$module/files" || true # 不知为何，解压到最后会报错但不影响使用
+cp "$workdir/ldconfig/ldconfig_$arch" "$module/files/sbin/"
+rm "$module.tar"
