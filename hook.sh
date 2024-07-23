@@ -27,6 +27,10 @@ function installDevPkg {
             if [ "$devPkg" == "libcurl4-gnutls-dev" ]; then
                 break
             fi
+            # libev-libevent-dev和libevent-dev冲突
+            if [ "$devPkg" == "libev-libevent-dev" ]; then
+                break
+            fi
             # 安装相同source的dev包
             if [ "$source" == "$devSource" ]; then
                 echo "$devPkg $pkg"
