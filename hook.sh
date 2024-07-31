@@ -44,13 +44,13 @@ function installDevPkg {
     rm /tmp/dev.packages.list
 }
 
-# 执行两次installDevPkg，安装dev包可能会引入新的lib包
-if [[ "$MODULE" == "develop" ]]; then
-    installDevPkg
-    installDevPkg
-fi
+# # 执行两次installDevPkg，安装dev包可能会引入新的lib包 (新版base手动引入dev包)
+# if [[ "$MODULE" == "develop" ]]; then
+#     installDevPkg
+#     installDevPkg
+# fi
 # 清理apt残留
 apt-get clean
 
-# ldconfig 需要
-touch /etc/ld.so.cache~ /etc/ld.so.conf.d/zz_deepin-linglong-app.conf
+# ldconfig 需要 (新版本玲珑不再需要)
+# touch /etc/ld.so.cache~ /etc/ld.so.conf.d/zz_deepin-linglong-app.conf
