@@ -383,6 +383,12 @@ xz-utils
 zlib1g
 zstd
 )
+# 安装输入法
+runtimePackages+=(
+    fcitx5-frontend-gtk2
+    fcitx5-frontend-gtk3
+)
+
 
 developPackages=("${runtimePackages[@]}")
 
@@ -393,6 +399,8 @@ gcc
 g++
 gdb
 cmake
+make
+automake
 xz-utils
 patchelf
 )

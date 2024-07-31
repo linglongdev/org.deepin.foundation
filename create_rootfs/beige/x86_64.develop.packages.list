@@ -1,7 +1,11 @@
 acl
 adduser
+adwaita-icon-theme
 apt
 at-spi2-common
+autoconf
+automake
+autotools-dev
 base-files
 base-passwd
 bash
@@ -59,6 +63,8 @@ e2fsprogs
 eject
 elfutils
 emacsen-common
+fcitx5-frontend-gtk2
+fcitx5-frontend-gtk3
 fdisk
 file
 findutils
@@ -96,6 +102,7 @@ gpgsm
 gpgv
 grep
 gsettings-desktop-schemas
+gtk-update-icon-cache
 gzip
 hicolor-icon-theme
 hostname
@@ -151,7 +158,9 @@ libcap2
 libcap2-bin
 libcbor0.8
 libcc1-0
+libcloudproviders0
 libcodec2-0.9
+libcolord2
 libcom-err2
 libconfig++9v5
 libcrypt-dev
@@ -194,6 +203,7 @@ libevent-2.1-7
 libexif12
 libexpat1
 libext2fs2
+libfcitx5gclient2
 libfdisk1
 libffado2
 libffi8
@@ -242,6 +252,10 @@ libgsm1
 libgssapi-krb5-2
 libgstreamer-plugins-base1.0-0
 libgstreamer1.0-0
+libgtk-3-0
+libgtk-3-common
+libgtk2.0-0
+libgtk2.0-common
 libharfbuzz-gobject0
 libharfbuzz-icu0
 libharfbuzz-subset0
@@ -538,6 +552,8 @@ locales
 login
 logsave
 lvm2
+m4
+make
 mawk
 media-types
 mesa-vdpau-drivers

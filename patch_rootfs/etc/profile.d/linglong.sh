@@ -23,7 +23,7 @@ for dir in $dirs; do
         PKG_CONFIG_PATH=$dir/lib/$triplet/pkgconfig:$PKG_CONFIG_PATH
         # Skip the root directory
         if [ -n "$dir" ]; then
-            CFLAGS="-isystem $dir/$triplet/include $CFLAGS"
+            CFLAGS="-I$dir/include/$triplet $CFLAGS"
         fi
     done
 
@@ -31,7 +31,7 @@ for dir in $dirs; do
     if [ -n "$dir" ]; then
         XDG_DATA_DIRS=$dir/share:$dir/local/share:$XDG_DATA_DIRS
         XDG_CONFIG_DIRS=$dir/share:$dir/local/share:$XDG_CONFIG_DIRS
-        CFLAGS="-isystem $dir/include $CFLAGS"
+        CFLAGS="-I$dir/include $CFLAGS"
     fi
 done
 
