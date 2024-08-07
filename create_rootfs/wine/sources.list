@@ -1,0 +1,2 @@
+deb [trusted=yes] https://pools.uniontech.com/deepin-beige beige main
+deb [trusted=yes] https://com-store-packages.uniontech.com/appstorev23 beige appstore
