@@ -10,7 +10,7 @@ apt-get -y update
 apt-get -y --allow-remove-essential remove mount --purge
 # 删除runtime的文档内容
 if [[ "$MODULE" == "runtime" ]]; then
-    rm -rf "/usr/share/doc/" "/usr/share/man/" "/usr/share/icons/" "/usr/share/locale/"
+    rm -rf "/usr/share/doc/*" "/usr/share/man/*" "/usr/share/icons/*" "/usr/share/locale/*"
 fi
 
 # 安装lib的dev包，在develop中所有的lib库都应该带上dev包
@@ -54,3 +54,4 @@ apt-get clean
 
 # ldconfig 需要 (新版本玲珑不再需要)
 # touch /etc/ld.so.cache~ /etc/ld.so.conf.d/zz_deepin-linglong-app.conf
+mkdir /runtime
