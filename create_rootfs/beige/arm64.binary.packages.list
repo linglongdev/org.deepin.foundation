@@ -3,14 +3,12 @@ adduser
 adwaita-icon-theme
 apt
 at-spi2-common
-autoconf
-automake
-autotools-dev
 base-files
 base-passwd
 bash
 bc
 binutils
+binutils-aarch64-linux-gnu
 binutils-common
 binutils-x86-64-linux-gnu
 bluez
@@ -20,12 +18,8 @@ bsdutils
 busybox
 bzip2
 ca-certificates
-cmake
-cmake-data
 coreutils
 cpio
-cpp
-cpp-12
 cryptsetup
 cryptsetup-bin
 cryptsetup-initramfs
@@ -62,7 +56,6 @@ dpkg
 dracut-install
 e2fsprogs
 eject
-elfutils
 emacsen-common
 fcitx5-frontend-gtk2
 fcitx5-frontend-gtk3
@@ -73,14 +66,8 @@ fontconfig
 fontconfig-config
 fonts-dejavu-core
 fonts-urw-base35
-g++
-g++-12
 gawk
-gcc
-gcc-12
-gcc-12-base
 gcc-13-base
-gdb
 gettext-base
 ghostscript
 gir1.2-atk-1.0
@@ -191,7 +178,6 @@ libdevmapper-event1.02.1
 libdevmapper1.02.1
 libdrm-amdgpu1
 libdrm-common
-libdrm-intel1
 libdrm-nouveau2
 libdrm-radeon1
 libdrm2
@@ -221,7 +207,6 @@ libfreeaptx0
 libfreetype6
 libfribidi0
 libgbm1
-libgcc-12-dev
 libgcc-s1
 libgcrypt20
 libgdbm-compat4
@@ -272,6 +257,7 @@ libhttp-cookies-perl
 libhttp-date-perl
 libhttp-message-perl
 libhttp-negotiate-perl
+libhwasan0
 libhwy1
 libical3
 libice6
@@ -282,7 +268,6 @@ libiec61883-0
 libijs-0.35
 libio-html-perl
 libio-socket-ssl-perl
-libipt2
 libisl23
 libitm1
 libjack-jackd2-0
@@ -378,7 +363,6 @@ libpython3.12
 libpython3.12-minimal
 libpython3.12-stdlib
 libqpdf29
-libquadmath0
 librav1e0
 libraw1394-11
 libreadline8
@@ -420,7 +404,6 @@ libsratom-0-0
 libss2
 libssh2-1
 libssl3
-libstdc++-12-dev
 libstdc++6
 libsvtav1enc1d1
 libswresample4
@@ -469,7 +452,6 @@ libva2
 libvdpau1
 libvorbis0a
 libvorbisenc2
-libvpl2
 libvpx7
 libvulkan1
 libwayland-client0
@@ -551,8 +533,6 @@ locales
 login
 logsave
 lvm2
-m4
-make
 mawk
 media-types
 mesa-vdpau-drivers
@@ -566,7 +546,6 @@ openssl
 p11-kit
 p11-kit-modules
 passwd
-patchelf
 perl
 perl-base
 perl-modules-5.36

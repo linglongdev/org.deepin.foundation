@@ -14,10 +14,10 @@ module="$1"
 arch="$2"
 
 case $module in
-    runtime);;
+    binary);;
     develop);;
-    "") echo "enter an module, like ./create_rootfs.sh runtime amd64" && exit;;
-    *) echo "unknow module \"$module\", supported module: runtime, develop" && exit;;
+    "") echo "enter an module, like ./create_rootfs.sh binary amd64" && exit;;
+    *) echo "unknow module \"$module\", supported module: binary, develop" && exit;;
 esac
 
 
@@ -25,11 +25,12 @@ case $arch in
     amd64);;
     arm64);;
     loongarch64);;
-    "") echo "enter an architecture, like ./create_rootfs.sh runtime amd64" && exit;;
+    loong64);;
+    "") echo "enter an architecture, like ./create_rootfs.sh binary amd64" && exit;;
     *) echo "unknow arch \"$arch\", supported arch: amd64, arm64, loongarch64" && exit;;
 esac
 
-runtimePackages=(
+binaryPackages=(
 acl
 at-spi2-common
 bash
@@ -133,9 +134,7 @@ libdaemon0
 libdatrie1
 libdbus-1-3
 libdecor-0-0
-libdrm-amdgpu1
 libdrm-common
-libdrm-intel1
 libdrm-nouveau2
 libdrm-radeon1
 libdrm2
@@ -282,7 +281,6 @@ libwebrtc-audio-processing1
 libx11-6
 libx11-data
 libx11-xcb1
-libxatracker2
 libxau6
 libxcb-composite0
 libxcb-keysyms1
@@ -384,13 +382,13 @@ zlib1g
 zstd
 )
 # 安装输入法
-runtimePackages+=(
+binaryPackages+=(
     fcitx5-frontend-gtk2
     fcitx5-frontend-gtk3
 )
 
 
-developPackages=("${runtimePackages[@]}")
+developPackages=("${binaryPackages[@]}")
 
 developPackages+=(
 elfutils
@@ -405,10 +403,6 @@ xz-utils
 patchelf
 )
 
-# 将develop中的lib库添加到runtime，减少两者的差异，避免在develop构建好应用后，无法在runtime运行的问题
-while IFS= read -r line; do
-    runtimePackages+=("$line")
-done < <(grep "^lib" develop.packages.list | grep -v dev$ | grep -v bin$)
 
 # 将数组拼接成字符串
 function join_by {
@@ -418,8 +412,8 @@ function join_by {
 
 include=""
 case $module in
-    runtime)
-        include=$(join_by , "${runtimePackages[@]}")
+    binary)
+        include=$(join_by , "${binaryPackages[@]}")
         ;;
     develop)
         include=$(join_by , "${developPackages[@]}")

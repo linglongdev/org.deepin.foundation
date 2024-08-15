@@ -14,10 +14,10 @@ module="$1"
 arch="$2"
 
 case $module in
-    runtime);;
+    binary);;
     develop);;
-    "") echo "enter an module, like ./create_rootfs.sh runtime amd64" && exit;;
-    *) echo "unknow module \"$module\", supported module: runtime, develop" && exit;;
+    "") echo "enter an module, like ./create_rootfs.sh binary amd64" && exit;;
+    *) echo "unknow module \"$module\", supported module: binary, develop" && exit;;
 esac
 
 
@@ -25,18 +25,18 @@ case $arch in
     amd64);;
     arm64);;
     loongarch64);;
-    "") echo "enter an architecture, like ./create_rootfs.sh runtime amd64" && exit;;
+    "") echo "enter an architecture, like ./create_rootfs.sh binary amd64" && exit;;
     *) echo "unknow arch \"$arch\", supported arch: amd64, arm64, loongarch64" && exit;;
 esac
 
 # 手动加的软件包写到这里
-runtimePackages=(
+binaryPackages=(
         libxss1
         dpkg
         ca-certificates
 )
 # 以下列表来自pkg2appimage的excludedeblist
-runtimePackages+=(
+binaryPackages+=(
         apt # 调试用
         # apt-transport-https
         # dbus # 已经存在mibase
@@ -51,7 +51,7 @@ runtimePackages+=(
         # gstreamer1.0-plugins-ugly
         # gstreamer1.0-pulseaudio
         # gtk2-engines-pixbuf # # gtk的东西不需要放到base
-        # kde-runtime # kde的东西不需要放到base
+        # kde-binary # kde的东西不需要放到base
         libasound2
         libatk1.0-0
         libc6-dev
@@ -80,17 +80,17 @@ runtimePackages+=(
         # libxcb1 libxcb相关的包放到单独的列表里
         mime-support
         #udev # 玲珑内部应该不需要设备管理
-        uuid-runtime
+        uuid-binary
 )
 
 # appimage的excludelist有这些包的so文件
-runtimePackages+=(
+binaryPackages+=(
         libice6
         libopengl0
 )
 
 # libxcb的附加包里面有 include "xcb.h"，所以需要把libxcb所有包都放进去
-runtimePackages+=(
+binaryPackages+=(
         libxcb1
         libxcb-doc
         libxcb-composite0
@@ -118,8 +118,8 @@ runtimePackages+=(
         libxcb-xkb1
 )
 
-# 复制runtimePackage
-developPackages=("${runtimePackages[@]}")
+# 复制binaryPackage
+developPackages=("${binaryPackages[@]}")
 
 # 构建需要的软件包
 developPackages+=(
@@ -142,15 +142,15 @@ function join_by {
 }
 
 
-# 将develop中的lib库添加到runtime，减少两者的差异，避免在develop构建好应用后，无法在runtime运行的问题
+# 将develop中的lib库添加到binary，减少两者的差异，避免在develop构建好应用后，无法在binary运行的问题
 while IFS= read -r line; do
-    runtimePackages+=("$line")
+    binaryPackages+=("$line")
 done < <(grep "^lib" develop.packages.list | grep -v dev$ | grep -v bin$)
 
 include=""
 case $module in
-    runtime)
-        include=$(join_by , "${runtimePackages[@]}")
+    binary)
+        include=$(join_by , "${binaryPackages[@]}")
         ;;
     develop)
         include=$(join_by , "${developPackages[@]}")

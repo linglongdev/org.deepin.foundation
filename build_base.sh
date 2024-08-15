@@ -36,8 +36,12 @@ case $ARCH in
         LINGLONG_ARCH="loongarch64"
         TRIPLET_LIST="loongarch64-linux-gnu"
         ;;
+    loong64)
+        LINGLONG_ARCH="loong64"
+        TRIPLET_LIST="loong64-linux-gnu"
+        ;;
     "") echo "enter an architecture, like ./build_base.sh beige amd64" && exit;;
-    *) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64, loongarch64" && exit;;
+    *) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64, loongarch64, loong64" && exit;;
 esac
 
 # shellcheck source=/dev/null
@@ -56,7 +60,7 @@ source "./create_rootfs/$DISTRO/version.sh"
 export CHANNEL="main"
 export LINGLONG_ARCH
 
-for module in develop runtime; do
+for module in develop binary; do
         echo $module
         # 生成rootfs
         "./create_rootfs/$DISTRO/create_rootfs.sh" $module "$ARCH"
@@ -65,7 +69,7 @@ for module in develop runtime; do
         # 生成 linglong-triplet-list
         echo "$TRIPLET_LIST" > "$module/files/etc/linglong-triplet-list"
         # 生成install
-        find "runtime/files" > "$module/$APPID.install"
+        find "$module/files" > "$module/$APPID.install"
         # 生成info.json
         MODULE=$module envsubst < info.template.json > "$module/info.json"
         # 生成linglong.yaml
