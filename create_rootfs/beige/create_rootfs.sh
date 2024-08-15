@@ -135,7 +135,9 @@ libdatrie1
 libdbus-1-3
 libdecor-0-0
 libdrm-common
+# libdrm-amdgpu1 arm64没有这个包
 libdrm-nouveau2
+# libdrm-intel1 arm64没有这个包
 libdrm-radeon1
 libdrm2
 libdw1
@@ -171,7 +173,7 @@ libgmp10
 libgnutls-dane0
 libgnutls30
 libgpg-error0
-libgprofng0
+# libgprofng0 loong64没有这个包
 libgraphite2-3
 libharfbuzz-gobject0
 libharfbuzz-icu0
@@ -281,6 +283,7 @@ libwebrtc-audio-processing1
 libx11-6
 libx11-data
 libx11-xcb1
+# libxatracker2 arm64没有这个包
 libxau6
 libxcb-composite0
 libxcb-keysyms1

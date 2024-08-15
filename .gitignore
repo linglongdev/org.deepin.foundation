@@ -7,7 +7,7 @@ rootfs
 linglong
 runtime
 develop
-binary
+binary*
 linglong.yaml
 /*.list
 /*.tar

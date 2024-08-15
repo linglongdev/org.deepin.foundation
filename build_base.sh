@@ -38,7 +38,7 @@ case $ARCH in
         ;;
     loong64)
         LINGLONG_ARCH="loong64"
-        TRIPLET_LIST="loong64-linux-gnu"
+        TRIPLET_LIST="loongarch64-linux-gnu"
         ;;
     "") echo "enter an architecture, like ./build_base.sh beige amd64" && exit;;
     *) echo "unknow arch \"$ARCH\", supported arch: amd64, arm64, loongarch64, loong64" && exit;;
