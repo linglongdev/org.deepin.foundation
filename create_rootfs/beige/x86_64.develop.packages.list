@@ -25,7 +25,7 @@ cmake-data
 coreutils
 cpio
 cpp
-cpp-12
+cpp-13
 cryptsetup
 cryptsetup-bin
 cryptsetup-initramfs
@@ -59,7 +59,6 @@ dirmngr
 dmeventd
 dmsetup
 dpkg
-dracut-install
 e2fsprogs
 eject
 elfutils
@@ -74,11 +73,10 @@ fontconfig-config
 fonts-dejavu-core
 fonts-urw-base35
 g++
-g++-12
+g++-13
 gawk
 gcc
-gcc-12
-gcc-12-base
+gcc-13
 gcc-13-base
 gdb
 gettext-base
@@ -113,7 +111,6 @@ initramfs-tools
 initramfs-tools-core
 iso-codes
 kbd
-keyboxd
 klibc-utils
 kmod
 libacl1
@@ -221,7 +218,7 @@ libfreeaptx0
 libfreetype6
 libfribidi0
 libgbm1
-libgcc-12-dev
+libgcc-13-dev
 libgcc-s1
 libgcrypt20
 libgdbm-compat4
@@ -249,9 +246,8 @@ libgomp1
 libgpg-error0
 libgprofng0
 libgraphite2-3
-libgs-common
-libgs10
-libgs10-common
+libgs9
+libgs9-common
 libgsm1
 libgssapi-krb5-2
 libgstreamer-plugins-base1.0-0
@@ -272,6 +268,7 @@ libhttp-cookies-perl
 libhttp-date-perl
 libhttp-message-perl
 libhttp-negotiate-perl
+libhwasan0
 libhwy1
 libical3
 libice6
@@ -374,6 +371,9 @@ libpulse-mainloop-glib0
 libpulse0
 libpulsedsp
 libpython3-stdlib
+libpython3.11
+libpython3.11-minimal
+libpython3.11-stdlib
 libpython3.12
 libpython3.12-minimal
 libpython3.12-stdlib
@@ -420,7 +420,7 @@ libsratom-0-0
 libss2
 libssh2-1
 libssl3
-libstdc++-12-dev
+libstdc++-13-dev
 libstdc++6
 libsvtav1enc1d1
 libswresample4
@@ -583,6 +583,8 @@ pulseaudio-module-bluetooth
 pulseaudio-utils
 python3
 python3-minimal
+python3.11
+python3.11-minimal
 python3.12
 python3.12-minimal
 readline-common
