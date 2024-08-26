@@ -36,7 +36,7 @@ at-spi2-common
 bash
 binutils
 binutils-common
-binutils-x86-64-linux-gnu
+# binutils-x86-64-linux-gnu x86 独有的
 bluez
 bluez-obexd
 bsdextrautils
