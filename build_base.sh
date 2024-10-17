@@ -49,8 +49,6 @@ esac
 
 # install depends
 dpkg -l | grep mmdebstrap > /dev/null || sudo apt-get install -y mmdebstrap
-dpkg -l | grep tmux > /dev/null || sudo apt-get install -y tmux
-dpkg -l | grep linglong-builder > /dev/null || sudo apt-get install -y linglong-builder
 
 # init ostree repo
 ll-builder -h > /dev/null
@@ -75,16 +73,15 @@ for module in develop binary; do
         # 生成linglong.yaml
         envsubst < linglong.template.yaml > "linglong.yaml"
         # 生成packages.list，并复制到多个位置
-        grep "^Package:" "$module/files/var/lib/dpkg/status" | awk '{print $2}' > "$module.packages.list"
+        grep "^Package:" "$module/files/var/lib/dpkg/status" > "$module.packages.list"
         cp $module.packages.list "./create_rootfs/$DISTRO/$LINGLONG_ARCH.$module.packages.list"
         cp $module.packages.list "$module/files/packages.list"
 
         # 提交到ostree
-        ostree commit --repo="$HOME/.cache/linglong-builder/repo" -b "$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$module" $module
-        # checkout到layers目录
-        rm -rf "$HOME/.cache/linglong-builder/layers/main/$APPID/$VERSION/$LINGLONG_ARCH/$module" || true
-        mkdir -p "$HOME/.cache/linglong-builder/layers/main/$APPID/$VERSION/$LINGLONG_ARCH" || true
-        ostree --repo="$HOME/.cache/linglong-builder/repo" checkout "$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$module" "$HOME/.cache/linglong-builder/layers/main/$APPID/$VERSION/$LINGLONG_ARCH/$module"
+        repo="$HOME/.cache/linglong-builder/repo"
+        commitID=$(ostree --repo=$repo commit -b "local:$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$module" $module)
+        ostree checkout --repo=$repo "local:$CHANNEL/$APPID/$VERSION/$LINGLONG_ARCH/$module" "$HOME/.cache/linglong-builder/layers/$commitID"
 done
-
+# 删除仓库缓存，让builder重新生成
+rm "$HOME/.cache/linglong-builder/states.json" || true
 envsubst < linglong.template.yaml > "linglong.yaml"

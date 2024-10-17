@@ -1,5 +1,6 @@
 {
-  "appid": "$APPID",
+  "schema_version": "1.0",
+  "id": "$APPID",
   "arch": ["$LINGLONG_ARCH"],
   "base": "org.deepin.foundation/20.0.2",
   "description": "deepin base environment.\n",

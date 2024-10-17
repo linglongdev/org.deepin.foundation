@@ -399,6 +399,7 @@ file
 gcc
 g++
 gdb
+gdbserver
 cmake
 make
 automake
