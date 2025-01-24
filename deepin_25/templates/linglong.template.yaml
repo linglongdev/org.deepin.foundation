@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
+version: "1"
+package:
+  id: $APPID
+  name: deepin-base
+  version: $VERSION
+  kind: runtime
+  description: |
+    deepin base environment.
+
+base: org.deepin.empty/20.0.0
+
+build: |
+  echo skip
