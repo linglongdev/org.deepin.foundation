@@ -1,0 +1,11 @@
+旧版本ldconfig无法和patchelf共用
+
+https://github.com/OpenAtom-Linyaps/linyaps/issues/434
+
+https://github.com/NixOS/patchelf/issues/44
+
+通过给v20的ldconfig添加补丁实现兼容
+
+https://sourceware.org/git/?p=glibc.git;a=patch;h=58e8f5fd2ba47b6dc47fd4d0a35e4175c7c87aaa
+
+目录下存放的二进制是添加补丁后构建的
