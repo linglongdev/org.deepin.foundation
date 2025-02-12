@@ -1,8 +1,0 @@
-#!/bin/sh
-set -e
-# 删除 /etc/localtime，由外部挂载不能是链接
-rm /buildroot/etc/localtime
-touch /buildroot/etc/localtime
-
-# 创建runtime挂载点
-mkdir /buildroot/runtime

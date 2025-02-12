@@ -1,6 +1,0 @@
-golang.org/x/crypto v0.9.0 h1:LF6fAI+IutBocDJ2OT0Q1g8plpYljMZ4+lty+dsqw3g=
-golang.org/x/crypto v0.9.0/go.mod h1:yrmDGqONDYtNj3tH8X9dzUun2m2lzPa9ngI6/RUPGR0=
-pault.ag/go/debian v0.16.0 h1:fivXn/IO9rn2nzTGndflDhOkNU703Axs/StWihOeU2g=
-pault.ag/go/debian v0.16.0/go.mod h1:JFl0XWRCv9hWBrB5MDDZjA5GSEs1X3zcFK/9kCNIUmE=
-pault.ag/go/topsort v0.1.1 h1:L0QnhUly6LmTv0e3DEzbN2q6/FGgAcQvaEw65S53Bg4=
-pault.ag/go/topsort v0.1.1/go.mod h1:r1kc/L0/FZ3HhjezBIPaNVhkqv8L0UJ9bxRuHRVZ0q4=
